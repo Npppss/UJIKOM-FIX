@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Admin - EVENT VIBE{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-5 mb-3 sm:mb-5 px-3 sm:px-4">
+    <div class="text-center mb-4 sm:mb-5 fade-in-up">
+        <h1 class="text-gradient mb-2" style="font-size: 1.75rem; font-weight: 900;">
+            <i class="bi bi-lightning-charge-fill"></i> Admin Dashboard
+        </h1>
+        <p class="text-white-50" style="font-size: 0.9rem;">Manage all events and track statistics</p>
+    </div>
+    
+    <!-- Charts Row -->
+    <div class="row mb-4 sm:mb-5">
+        <div class="col-12 col-md-6 mb-3 sm:mb-4">
+            <div class="chart-container fade-in-up" style="animation-delay: 0.1s;">
+                <h5 class="chart-header">
+                    <i class="bi bi-bar-chart-fill"></i> Jumlah Kegiatan per Bulan
+                </h5>
+                <canvas id="eventsChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="chart-container fade-in-up" style="animation-delay: 0.2s;">
+                <h5 class="chart-header">
+                    <i class="bi bi-people-fill"></i> Jumlah Peserta per Bulan
+                </h5>
+                <canvas id="participantsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top 10 Events -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="chart-container fade-in-up" style="animation-delay: 0.3s;">
+                <h5 class="chart-header">
+                    <i class="bi bi-trophy-fill"></i> Top 10 Kegiatan dengan Peserta Terbanyak
+                </h5>
+                <canvas id="topEventsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="glass-card fade-in-up" style="animation-delay: 0.4s;">
+                <h4 class="text-gradient mb-4" style="font-weight: 700;">
+                    <i class="bi bi-lightning-charge-fill"></i> Quick Actions
+                </h4>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'events:create' %}" class="btn btn-vibrant" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        <i class="bi bi-plus-circle me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Tambah Kegiatan</span>
+                    </a>
+                    <a href="{% url 'events:list' %}" class="btn" style="background: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        <i class="bi bi-calendar-check me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Kelola Kegiatan</span>
+                    </a>
+                    <a href="{% url 'events:news_create' %}" class="btn" style="background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        <i class="bi bi-pencil-square me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Tulis Berita</span>
+                    </a>
+                    <a href="{% url 'events:review_reports' %}" class="btn" style="background-color: #DC3545 !important; color: #FFFFFF !important; border: 2px solid #DC3545 !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        <i class="bi bi-flag me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Review Laporan</span>
+                        {% if pending_reports_count %}
+                            <span class="badge bg-light text-dark ms-2" style="background-color: #FFFFFF !important; color: #DC3545 !important; font-weight: 700;">{{ pending_reports_count }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'dashboard:admin_export' %}?format=xlsx" class="btn" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        <i class="bi bi-file-earmark-excel me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Export Excel</span>
+                    </a>
+                    <a href="{% url 'dashboard:admin_export' %}?format=csv" class="btn" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                        <i class="bi bi-filetype-csv me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Export CSV</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Vibrant Chart Colors
+    const vibrantColors = {
+        purple: ['rgba(139, 92, 246, 0.8)', 'rgba(139, 92, 246, 1)'],
+        pink: ['rgba(236, 72, 153, 0.8)', 'rgba(236, 72, 153, 1)'],
+        blue: ['rgba(59, 130, 246, 0.8)', 'rgba(59, 130, 246, 1)'],
+        orange: ['rgba(249, 115, 22, 0.8)', 'rgba(249, 115, 22, 1)'],
+        gradient: ['rgba(139, 92, 246, 0.8)', 'rgba(236, 72, 153, 0.8)', 'rgba(59, 130, 246, 0.8)']
+    };
+    
+    // Events Chart
+    const eventsData = {{ events_chart_data|safe }};
+    const eventsCtx = document.getElementById('eventsChart').getContext('2d');
+    new Chart(eventsCtx, {
+        type: 'bar',
+        data: {
+            labels: eventsData.labels,
+            datasets: [{
+                label: 'Jumlah Kegiatan',
+                data: eventsData.data,
+                backgroundColor: vibrantColors.purple[0],
+                borderColor: vibrantColors.purple[1],
+                borderWidth: 2,
+                borderRadius: 10,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#fff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#fff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Participants Chart
+    const participantsData = {{ participants_chart_data|safe }};
+    const participantsCtx = document.getElementById('participantsChart').getContext('2d');
+    new Chart(participantsCtx, {
+        type: 'bar',
+        data: {
+            labels: participantsData.labels,
+            datasets: [{
+                label: 'Jumlah Peserta',
+                data: participantsData.data,
+                backgroundColor: vibrantColors.pink[0],
+                borderColor: vibrantColors.pink[1],
+                borderWidth: 2,
+                borderRadius: 10,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#fff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#fff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Top Events Chart
+    const topEventsData = {{ top_events_chart_data|safe }};
+    const topEventsCtx = document.getElementById('topEventsChart').getContext('2d');
+    new Chart(topEventsCtx, {
+        type: 'bar',
+        data: {
+            labels: topEventsData.labels,
+            datasets: [{
+                label: 'Jumlah Peserta',
+                data: topEventsData.data,
+                backgroundColor: vibrantColors.blue[0],
+                borderColor: vibrantColors.blue[1],
+                borderWidth: 2,
+                borderRadius: 10,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#fff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#fff'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

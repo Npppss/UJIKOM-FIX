@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Setujui Laporan - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h2 class="mb-3" style="font-size: 2rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+Setujui Laporan
+                        </h2>
+                    </div>
+                    
+                    <div class="alert alert-warning mb-4" style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 8px; color: #92400E;">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Peringatan:</strong> Dengan menyetujui laporan ini, Event Organizer akan di-suspend dan user akan mendapat achievement.
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 style="font-weight: 600; color: #1F2937;">Detail Laporan</h5>
+                        <div class="bg-light p-3 rounded" style="background-color: #F9FAFB !important;">
+                            <p class="mb-2"><strong>Event:</strong> {{ report.event.title }}</p>
+                            <p class="mb-2"><strong>Pelapor:</strong> {{ report.reporter.name }} ({{ report.reporter.email }})</p>
+                            <p class="mb-2"><strong>Alasan:</strong> {{ report.get_reason_display }}</p>
+                            <p class="mb-0"><strong>Deskripsi:</strong> {{ report.description }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 style="font-weight: 600; color: #1F2937;">Event Organizer yang Akan Di-Suspend</h5>
+                        <div class="bg-light p-3 rounded" style="background-color: #F9FAFB !important;">
+                            <p class="mb-2"><strong>Nama:</strong> {{ report.event.user.name }}</p>
+                            <p class="mb-2"><strong>Email:</strong> {{ report.event.user.email }}</p>
+                            <p class="mb-0"><strong>Status:</strong> 
+                                {% if report.event.user.is_suspended %}
+                                    <span class="badge bg-danger">Sudah Di-Suspend</span>
+                                {% else %}
+                                    <span class="badge bg-success">Aktif</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn px-5 py-2" style="background-color: #10B981 !important; color: #FFFFFF !important; border-radius: 8px; font-weight: 700 !important; border: 2px solid #10B981 !important;">
+                                <span style="color: #FFFFFF !important;">Setujui & Suspend Organizer</span>
+                            </button>
+                            <a href="{% url 'events:review_reports' %}" class="btn px-5 py-2" style="background-color: #E5E7EB; color: #1F2937; border-radius: 8px; font-weight: 500; border: none; text-decoration: none;">
+                                <i class="bi bi-arrow-left me-2"></i> Kembali
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

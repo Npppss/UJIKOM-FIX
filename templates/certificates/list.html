@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Sertifikat Saya - Sistem Pendaftaran Kegiatan{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4">
+        <i class="bi bi-award"></i> Sertifikat Saya
+    </h2>
+    
+    {% if certificates %}
+        <div class="row">
+            {% for certificate in certificates %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card shadow h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-award text-warning"></i> {{ certificate.event.title }}
+                            </h5>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ certificate.event.event_date|date:"d M Y" }}
+                                </small>
+                            </p>
+                            {% if certificate.certificate_number %}
+                                <p class="mb-2">
+                                    <strong>No. Sertifikat:</strong><br>
+                                    <code>{{ certificate.certificate_number }}</code>
+                                </p>
+                            {% endif %}
+                            <p class="mb-2">
+                                <strong>Di-generate:</strong><br>
+                                {{ certificate.generated_at|date:"d M Y H:i" }}
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'certificates:download' certificate.id %}" class="btn btn-primary w-100">
+                                <i class="bi bi-download"></i> Download Sertifikat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Belum ada sertifikat.
+            <br>Ikuti kegiatan dan isi daftar hadir untuk mendapatkan sertifikat.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

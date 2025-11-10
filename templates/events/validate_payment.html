@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Validasi Pembayaran - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%); color: #FFFFFF; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 700;">
+                        <i class="bi bi-credit-card me-2"></i> Validasi Pembayaran
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <h5 style="font-weight: 600; color: #1F2937;">Informasi Peserta</h5>
+                        <div class="card" style="background-color: #F9FAFB;">
+                            <div class="card-body">
+                                <p class="mb-2"><strong>Nama:</strong> {{ registration.user.name }}</p>
+                                <p class="mb-2"><strong>Email:</strong> {{ registration.user.email }}</p>
+                                <p class="mb-2"><strong>No. HP:</strong> {{ registration.user.phone }}</p>
+                                <p class="mb-0"><strong>Event:</strong> {{ registration.event.title }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 style="font-weight: 600; color: #1F2937;">Bukti Pembayaran</h5>
+                        {% if registration.payment_proof %}
+                            <div class="text-center mb-3">
+                                <img src="{{ registration.payment_proof.url }}" alt="Bukti Pembayaran" class="img-fluid rounded" style="max-height: 500px; border: 2px solid #E5E7EB;">
+                            </div>
+                            <div class="text-center">
+                                <a href="{{ registration.payment_proof.url }}" target="_blank" class="btn btn-sm" style="background-color: #3B82F6; color: #FFFFFF; border-radius: 8px; text-decoration: none;">
+                                    <i class="bi bi-download me-1"></i> Download
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> Bukti pembayaran belum diupload.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 style="font-weight: 600; color: #1F2937;">Status Saat Ini</h5>
+                        <div class="alert alert-info">
+                            <strong>Status:</strong> {{ registration.get_payment_status_display }}
+                            {% if registration.payment_validated_at %}
+                                <br><small>Divalidasi pada: {{ registration.payment_validated_at|date:"d M Y H:i" }}</small>
+                            {% endif %}
+                            {% if registration.payment_rejection_reason %}
+                                <br><strong>Alasan Penolakan:</strong> {{ registration.payment_rejection_reason }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if registration.payment_proof %}
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="d-flex gap-3 justify-content-end">
+                                <a href="{% url 'events:participants' registration.event.id %}" class="btn" style="background-color: #E5E7EB; color: #1F2937; font-weight: 600; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                                    <i class="bi bi-x-circle me-2"></i> Batal
+                                </a>
+                                <button type="submit" name="action" value="reject" class="btn" style="background-color: #EF4444 !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem 1.5rem; border: none;">
+                                    <i class="bi bi-x-circle me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Tolak</span>
+                                </button>
+                                <button type="submit" name="action" value="approve" class="btn" style="background-color: #10B981 !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem 1.5rem; border: none;">
+                                    <i class="bi bi-check-circle me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Setujui</span>
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="text-center">
+                            <a href="{% url 'events:participants' registration.event.id %}" class="btn" style="background-color: #1E3A8A; color: #FFFFFF; font-weight: 700; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                                <i class="bi bi-arrow-left me-2"></i> Kembali
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

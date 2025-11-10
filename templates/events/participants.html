@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Peserta Kegiatan - Sistem Pendaftaran Kegiatan{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>
+                <i class="bi bi-people"></i> Peserta: {{ event.title }}
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'events:list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Informasi Kegiatan</h5>
+                    <p class="mb-1"><strong>Tanggal:</strong> {{ event.event_date|date:"d F Y" }}</p>
+                    <p class="mb-1"><strong>Waktu:</strong> {{ event.event_time|time:"H:i" }}</p>
+                    <p class="mb-0"><strong>Total Peserta:</strong> {{ registrations.count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if registrations %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>No. HP</th>
+                        <th>Status</th>
+                        {% if event.price and event.price > 0 %}
+                            <th>Status Pembayaran</th>
+                            <th>Bukti Pembayaran</th>
+                            <th>Aksi</th>
+                        {% endif %}
+                        <th>Tanggal Daftar</th>
+                        <th>Tanggal Hadir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registration in registrations %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ registration.user.name }}</td>
+                            <td>{{ registration.user.email }}</td>
+                            <td>{{ registration.user.phone }}</td>
+                            <td>
+                                {% if registration.status == 'attended' %}
+                                    <span class="badge bg-success">Hadir</span>
+                                {% elif registration.status == 'registered' %}
+                                    <span class="badge bg-warning">Terdaftar</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Absen</span>
+                                {% endif %}
+                            </td>
+                            {% if event.price and event.price > 0 %}
+                                <td>
+                                    {% if registration.payment_status == 'approved' %}
+                                        <span class="badge bg-success">Disetujui</span>
+                                        {% if registration.payment_validated_by %}
+                                            <br><small class="text-muted">Oleh: {{ registration.payment_validated_by.name }}</small>
+                                        {% endif %}
+                                        {% if registration.payment_validated_at %}
+                                            <br><small class="text-muted">{{ registration.payment_validated_at|date:"d M Y H:i" }}</small>
+                                        {% endif %}
+                                    {% elif registration.payment_status == 'rejected' %}
+                                        <span class="badge bg-danger">Ditolak</span>
+                                        {% if registration.payment_validated_by %}
+                                            <br><small class="text-muted">Oleh: {{ registration.payment_validated_by.name }}</small>
+                                        {% endif %}
+                                        {% if registration.payment_validated_at %}
+                                            <br><small class="text-muted">{{ registration.payment_validated_at|date:"d M Y H:i" }}</small>
+                                        {% endif %}
+                                    {% elif registration.payment_status == 'pending' %}
+                                        <span class="badge bg-warning">Menunggu</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Tidak Diperlukan</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if registration.payment_proof %}
+                                        <a href="{{ registration.payment_proof.url }}" target="_blank" class="btn btn-sm btn-primary" title="Lihat Bukti Pembayaran">
+                                            <i class="bi bi-eye"></i> Lihat
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if registration.payment_status == 'pending' %}
+                                        <a href="{% url 'events:validate_payment' registration.id %}" class="btn btn-sm btn-success" title="Validasi Pembayaran">
+                                            <i class="bi bi-check-circle"></i> Validasi
+                                        </a>
+                                    {% elif registration.payment_status == 'rejected' %}
+                                        <a href="{% url 'events:validate_payment' registration.id %}" class="btn btn-sm btn-primary" title="Review Ulang Pembayaran">
+                                            <i class="bi bi-arrow-clockwise"></i> Review Ulang
+                                        </a>
+                                    {% elif registration.payment_status == 'approved' %}
+                                        <span class="text-muted">-</span>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            <td>{{ registration.created_at|date:"d M Y H:i" }}</td>
+                            <td>
+                                {% if registration.attendance_at %}
+                                    {{ registration.attendance_at|date:"d M Y H:i" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Belum ada peserta yang mendaftar.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

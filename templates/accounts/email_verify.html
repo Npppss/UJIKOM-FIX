@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Verifikasi Email - Sistem Pendaftaran Kegiatan{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="bi bi-envelope-check"></i> Verifikasi Email
+                    </h2>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        Kode OTP telah dikirim ke email Anda. Silakan masukkan kode OTP untuk verifikasi.
+                        <br><br>
+                        <strong>Catatan:</strong> Kode OTP berlaku selama 5 menit.
+                        {% if session_otp %}
+                            <br><br>
+                            <strong>OTP Anda:</strong> <code>{{ session_otp }}</code> (jika email tidak diterima)
+                        {% endif %}
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.otp_code.id_for_label }}" class="form-label">
+                                <i class="bi bi-shield-check"></i> Kode OTP (6 digit)
+                            </label>
+                            {{ form.otp_code }}
+                            {% if form.otp_code.errors %}
+                                <div class="text-danger small">{{ form.otp_code.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Verifikasi
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <p class="mb-0">
+                            Tidak menerima OTP? 
+                            <a href="{% url 'accounts:resend_otp' %}">Kirim ulang</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

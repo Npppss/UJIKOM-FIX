@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Daftar Hadir - Sistem Pendaftaran Kegiatan{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-check-circle"></i> Isi Daftar Hadir: {{ event.title }}
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        Masukkan token 10 digit yang dikirim ke email Anda saat mendaftar kegiatan.
+                    </div>
+                    
+                    {% if not form.token.errors %}
+                    <div class="alert" style="background: linear-gradient(135deg, #DBEAFE 0%, #E0E7FF 100%); border: 2px solid #3B82F6; border-radius: 15px; padding: 1.5rem;">
+                        <h6 class="mb-3" style="color: #1F2937; font-weight: 700;">
+                            <i class="bi bi-exclamation-triangle" style="color: #F59E0B;"></i> 
+                            <span style="color: #1F2937;">Token hilang?</span>
+                        </h6>
+                        <p class="mb-3" style="color: #4B5563; font-weight: 500;">
+                            Hubungi Event Organizer untuk mendapatkan token baru.
+                        </p>
+                        <div class="mt-3" style="background-color: rgba(255,255,255,0.7); padding: 1rem; border-radius: 8px; border-left: 4px solid #3B82F6;">
+                            <p class="mb-2" style="color: #1F2937; font-weight: 600; font-size: 1rem;">
+                                <i class="bi bi-person-badge" style="color: #1E3A8A;"></i> 
+                                <strong style="color: #1F2937;">Event Organizer:</strong> {{ event.user.name }}
+                            </p>
+                            <p class="mb-1" style="color: #1F2937; font-size: 0.95rem;">
+                                <i class="bi bi-envelope-fill" style="color: #1E3A8A;"></i> 
+                                <a href="mailto:{{ event.user.email }}" style="color: #1E40AF; text-decoration: none; font-weight: 500;">
+                                    {{ event.user.email }}
+                                </a>
+                            </p>
+                            <p class="mb-0" style="color: #1F2937; font-size: 0.95rem;">
+                                <i class="bi bi-telephone-fill" style="color: #1E3A8A;"></i> 
+                                <a href="tel:{{ event.user.phone }}" style="color: #1E40AF; text-decoration: none; font-weight: 500;">
+                                    {{ event.user.phone }}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-4">
+                        <h5>Informasi Kegiatan</h5>
+                        <p class="mb-1"><strong>Tanggal:</strong> {{ event.event_date|date:"d F Y" }}</p>
+                        <p class="mb-1"><strong>Waktu:</strong> {{ event.event_time|time:"H:i" }}</p>
+                        <p class="mb-0"><strong>Lokasi:</strong> {{ event.location }}</p>
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.token.id_for_label }}" class="form-label">
+                                <i class="bi bi-shield-check"></i> Token Daftar Hadir (10 digit)
+                            </label>
+                            {{ form.token }}
+                            {% if form.token.help_text %}
+                                <small class="form-text text-muted">{{ form.token.help_text }}</small>
+                            {% endif %}
+                            {% if form.token.errors %}
+                                <div class="text-danger small">{{ form.token.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'registrations:history' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Batal
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle"></i> Konfirmasi Kehadiran
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

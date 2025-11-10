@@ -1,0 +1,523 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Katalog Kegiatan - Dynamic Experience{% endblock %}
+
+{% block extra_css %}
+<!-- TailwindCSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+    
+    /* Custom Tailwind Config */
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'blue-dark': '#1E3A8A',
+                    'purple-bright': '#7C3AED',
+                },
+                fontFamily: {
+                    'poppins': ['Poppins', 'sans-serif'],
+                    'inter': ['Inter', 'sans-serif'],
+                },
+            }
+        }
+    }
+    
+    /* Smooth fade-in animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    .fade-in-up-delay-1 {
+        animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        opacity: 0;
+    }
+    
+    .fade-in-up-delay-2 {
+        animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        opacity: 0;
+    }
+    
+    .fade-in-up-delay-3 {
+        animation: fadeInUp 0.8s ease-out 0.6s forwards;
+        opacity: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] sm:min-h-screen flex items-center justify-center text-center text-white overflow-hidden pt-20 sm:pt-0"
+         style="background: linear-gradient(135deg, #1E3A8A 0%, #4C1D95 50%, #7C3AED 100%);">
+    
+    <!-- Hero Content -->
+    <div class="relative z-10 px-4 sm:px-6 w-full max-w-5xl mx-auto">
+        <!-- Main Title -->
+        <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 font-poppins drop-shadow-2xl fade-in-up">
+            Dynamic Experience
+        </h1>
+        
+        <!-- Subtitle -->
+        <p class="text-base sm:text-lg md:text-2xl lg:text-3xl mb-6 sm:mb-8 md:mb-12 font-inter opacity-95 font-medium fade-in-up-delay-1 px-2">
+            Where Knowledge Meets Entertainment
+        </p>
+        
+        <!-- Search Bar -->
+        <div class="max-w-4xl mx-auto mb-6 sm:mb-8 fade-in-up-delay-2">
+            <form method="GET" action="{% url 'events:catalog' %}" 
+                  class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
+                <div class="flex flex-col sm:flex-row items-stretch">
+                    <!-- Search Input -->
+                    <div class="flex-1 flex items-center px-4 sm:px-6 py-3 sm:py-4 border-b sm:border-b-0 sm:border-r border-gray-200">
+                        <input type="text" 
+                               name="search" 
+                               value="{{ search_query|default:'' }}"
+                               placeholder="Cari event..." 
+                               class="flex-1 outline-none text-gray-800 bg-transparent font-inter text-sm sm:text-base md:text-lg placeholder-gray-400 focus:placeholder-gray-300 transition-all w-full"
+                               autocomplete="off">
+                        {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+                    </div>
+                    
+                    <!-- Category Dropdown -->
+                    <div class="relative flex items-center px-4 sm:px-6 py-3 sm:py-4 border-b sm:border-b-0 sm:border-r border-gray-200 bg-white/50">
+                        <select name="category" 
+                                onchange="this.form.submit()"
+                                class="appearance-none outline-none text-gray-800 bg-transparent font-inter text-sm sm:text-base md:text-lg cursor-pointer pr-8 sm:pr-10 focus:text-blue-dark transition-colors w-full font-medium"
+                                style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22none%22 stroke=%22%231E3A8A%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M2 5l6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 12px;">
+                            <option value="">Semua Kategori</option>
+                            <option value="seminar" {% if category == 'seminar' %}selected{% endif %}>Seminar & Conference</option>
+                            <option value="concert" {% if category == 'concert' %}selected{% endif %}>Concert & Festival</option>
+                        </select>
+                        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <button type="submit" 
+                            class="px-6 sm:px-8 py-3 sm:py-4 font-semibold font-inter text-sm sm:text-base md:text-lg transition-all duration-300 hover:shadow-lg active:scale-95 rounded-b-2xl sm:rounded-b-none sm:rounded-r-full"
+                            style="background-color: #1E3A8A; color: #FFD700; font-weight: 700;">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- CTA Button -->
+        <div class="fade-in-up-delay-3">
+            <a href="#events" 
+               class="inline-block bg-gradient-to-r from-blue-dark to-purple-bright text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg md:text-xl hover:from-blue-800 hover:to-purple-600 hover:scale-105 hover:shadow-2xl transition-all duration-300 font-poppins">
+                <i class="bi bi-arrow-down-circle mr-2"></i> Explore Events
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Event Section -->
+{% if featured_event %}
+<div class="container mx-auto px-4 sm:px-6 mt-8 sm:mt-12 max-w-6xl">
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl border-2 border-transparent bg-clip-padding"
+         style="background-image: linear-gradient(white, white), linear-gradient(135deg, #1E3A8A, #7C3AED); background-origin: border-box; background-clip: padding-box, border-box;"
+         data-aos="fade-up">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
+            <h2 class="text-2xl sm:text-3xl font-bold flex items-center gap-2 font-poppins" style="background: linear-gradient(135deg, #1E3A8A, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-star-fill text-yellow-500"></i> Featured Event
+            </h2>
+            <div class="flex gap-2 sm:gap-4 flex-wrap" id="countdown-timer">
+                <div class="bg-gradient-to-r from-blue-dark to-purple-bright text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-center shadow-lg hover:scale-105 transition-transform">
+                    <span class="text-2xl sm:text-3xl font-bold block font-poppins" id="days">00</span>
+                    <span class="text-xs uppercase tracking-wider font-inter">Days</span>
+                </div>
+                <div class="bg-gradient-to-r from-blue-dark to-purple-bright text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-center shadow-lg hover:scale-105 transition-transform">
+                    <span class="text-2xl sm:text-3xl font-bold block font-poppins" id="hours">00</span>
+                    <span class="text-xs uppercase tracking-wider font-inter">Hours</span>
+                </div>
+                <div class="bg-gradient-to-r from-blue-dark to-purple-bright text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-center shadow-lg hover:scale-105 transition-transform">
+                    <span class="text-2xl sm:text-3xl font-bold block font-poppins" id="minutes">00</span>
+                    <span class="text-xs uppercase tracking-wider font-inter">Minutes</span>
+                </div>
+                <div class="bg-gradient-to-r from-blue-dark to-purple-bright text-white px-6 py-4 rounded-xl text-center shadow-lg hover:scale-105 transition-transform">
+                    <span class="text-3xl font-bold block font-poppins" id="seconds">00</span>
+                    <span class="text-xs uppercase tracking-wider font-inter">Seconds</span>
+                </div>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+            <div>
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="bi bi-ticket-perforated text-2xl" style="color: #7C3AED;"></i>
+                    <h3 class="text-2xl font-bold font-poppins">{{ featured_event.title }}</h3>
+                </div>
+                <p class="text-gray-600 mb-4 font-inter">{{ featured_event.description|truncatewords:30 }}</p>
+                <div class="flex flex-wrap gap-4 text-sm text-gray-600 font-inter">
+                    <span><i class="bi bi-calendar3"></i> {{ featured_event.event_date|date:"d M Y" }}</span>
+                    <span><i class="bi bi-clock"></i> {{ featured_event.event_time|time:"H:i" }}</span>
+                    <span><i class="bi bi-geo-alt-fill"></i> {{ featured_event.location|truncatewords:3 }}</span>
+                </div>
+            </div>
+            <div class="text-center md:text-right">
+                <a href="{% url 'events:detail' featured_event.id %}" 
+                   class="inline-block px-8 py-4 rounded-full font-bold hover:shadow-xl hover:scale-105 transition-all duration-300 font-poppins"
+                   style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; text-decoration: none !important;">
+                    <i class="bi bi-arrow-right-circle" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Book Now</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Events Section -->
+<div class="container mx-auto px-4 py-16 max-w-7xl" id="events">
+    {% if category == 'seminar' %}
+        <!-- Seminar Section -->
+        <div class="mb-16" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 font-poppins flex items-center justify-center gap-3" style="color: #1E3A8A;">
+                    <i class="bi bi-mortarboard text-5xl"></i> Seminar & Conference
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto font-inter">
+                    Tingkatkan pengetahuan dan keterampilan Anda dengan seminar berkualitas
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for event in events %}
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                         data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                        {% if event.flyer %}
+                            <img src="{{ event.flyer.url }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                        {% else %}
+                            <div class="w-full h-48 bg-gradient-to-r from-blue-dark to-blue-600 flex items-center justify-center">
+                                <i class="bi bi-mortarboard text-6xl text-white opacity-80"></i>
+                            </div>
+                        {% endif %}
+                        <div class="p-6">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-3"
+                                  style="background: rgba(30, 58, 138, 0.1); color: #1E3A8A;">
+                                <i class="bi bi-mortarboard"></i> Seminar
+                            </span>
+                            <h3 class="text-xl font-bold mb-2 font-poppins" style="color: #1F2937 !important;">{{ event.title }}</h3>
+                            <p class="text-gray-600 text-sm mb-4 font-inter line-clamp-2">{{ event.description|truncatewords:15 }}</p>
+                            <div class="space-y-2 mb-4 text-sm font-inter">
+                                <p class="text-blue-dark font-semibold"><i class="bi bi-calendar3"></i> {{ event.event_date|date:"d M Y" }}</p>
+                                <p class="text-gray-600"><i class="bi bi-clock"></i> {{ event.event_time|time:"H:i" }}</p>
+                                <p class="text-gray-600"><i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}</p>
+                            </div>
+                            <a href="{% url 'events:detail' event.id %}" 
+                               class="block w-full text-center py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins"
+                               style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; text-decoration: none !important;">
+                                <i class="bi bi-arrow-right-circle" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Book Now</span>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow">
+                        <i class="bi bi-calendar-x text-6xl mb-4" style="color: #1E3A8A;"></i>
+                        <h3 class="text-2xl font-bold mb-2 font-poppins" style="color: #1E3A8A;">Belum Ada Seminar</h3>
+                        <p class="text-gray-600 font-inter">Tidak ada seminar yang tersedia saat ini.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% elif category == 'concert' %}
+        <!-- Concert Section -->
+        <div class="mb-12 sm:mb-16" data-aos="fade-up">
+            <div class="text-center mb-8 sm:mb-12">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 font-poppins flex items-center justify-center gap-2 sm:gap-3 flex-wrap" style="color: #7C3AED;">
+                    <i class="bi bi-music-note-beamed text-3xl sm:text-4xl md:text-5xl"></i> <span>Concert & Festival</span>
+                </h2>
+                <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto font-inter px-4">
+                    Nikmati momen tak terlupakan dengan konser dan festival terbaik
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for event in events %}
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                         data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                        {% if event.flyer %}
+                            <img src="{{ event.flyer.url }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                        {% else %}
+                            <div class="w-full h-48 bg-gradient-to-r from-purple-bright to-purple-400 flex items-center justify-center">
+                                <i class="bi bi-music-note-beamed text-6xl text-white opacity-80"></i>
+                            </div>
+                        {% endif %}
+                        <div class="p-6">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-3"
+                                  style="background: rgba(124, 58, 237, 0.1); color: #7C3AED;">
+                                <i class="bi bi-music-note-beamed"></i> Concert
+                            </span>
+                            <h3 class="text-xl font-bold mb-2 font-poppins" style="color: #1F2937 !important;">{{ event.title }}</h3>
+                            <p class="text-gray-600 text-sm mb-4 font-inter line-clamp-2">{{ event.description|truncatewords:15 }}</p>
+                            <div class="space-y-2 mb-4 text-sm font-inter">
+                                <p class="font-semibold" style="color: #7C3AED;"><i class="bi bi-calendar3"></i> {{ event.event_date|date:"d M Y" }}</p>
+                                <p class="text-gray-600"><i class="bi bi-clock"></i> {{ event.event_time|time:"H:i" }}</p>
+                                <p class="text-gray-600"><i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}</p>
+                            </div>
+                            <a href="{% url 'events:detail' event.id %}" 
+                               class="block w-full text-center py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins"
+                               style="background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; text-decoration: none !important;">
+                                <i class="bi bi-arrow-right-circle" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Book Now</span>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow">
+                        <i class="bi bi-calendar-x text-6xl mb-4" style="color: #7C3AED;"></i>
+                        <h3 class="text-2xl font-bold mb-2 font-poppins" style="color: #7C3AED;">Belum Ada Konser</h3>
+                        <p class="text-gray-600 font-inter">Tidak ada konser atau festival yang tersedia saat ini.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% else %}
+        <!-- All Events - Both Categories -->
+        <!-- Seminar Section -->
+        <div class="mb-16" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 font-poppins flex items-center justify-center gap-3" style="color: #1E3A8A;">
+                    <i class="bi bi-mortarboard text-5xl"></i> Seminar & Conference
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto font-inter">
+                    Tingkatkan pengetahuan dan keterampilan Anda dengan seminar berkualitas
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for event in events %}
+                    {% if 'seminar' in event.title|lower or 'conference' in event.title|lower or 'workshop' in event.title|lower or 'training' in event.title|lower %}
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                             data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                            {% if event.flyer %}
+                                <img src="{{ event.flyer.url }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                            {% else %}
+                                <div class="w-full h-48 bg-gradient-to-r from-blue-dark to-blue-600 flex items-center justify-center">
+                                    <i class="bi bi-mortarboard text-6xl text-white opacity-80"></i>
+                                </div>
+                            {% endif %}
+                            <div class="p-6">
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-3"
+                                      style="background: rgba(30, 58, 138, 0.1); color: #1E3A8A;">
+                                    <i class="bi bi-mortarboard"></i> Seminar
+                                </span>
+                                <h3 class="text-xl font-bold mb-2 font-poppins" style="color: #1F2937 !important;">{{ event.title }}</h3>
+                                <p class="text-gray-600 text-sm mb-4 font-inter line-clamp-2">{{ event.description|truncatewords:15 }}</p>
+                                <div class="space-y-2 mb-4 text-sm font-inter">
+                                    <p class="text-blue-dark font-semibold"><i class="bi bi-calendar3"></i> {{ event.event_date|date:"d M Y" }}</p>
+                                    <p class="text-gray-600"><i class="bi bi-clock"></i> {{ event.event_time|time:"H:i" }}</p>
+                                    <p class="text-gray-600"><i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}</p>
+                                </div>
+                                <a href="{% url 'events:detail' event.id %}" 
+                                   class="block w-full text-center bg-gradient-to-r from-blue-dark to-blue-600 text-white py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins">
+                                    <i class="bi bi-arrow-right-circle"></i> Book Now
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow">
+                        <i class="bi bi-calendar-x text-6xl mb-4" style="color: #1E3A8A;"></i>
+                        <h3 class="text-2xl font-bold mb-2 font-poppins" style="color: #1E3A8A;">Belum Ada Seminar</h3>
+                        <p class="text-gray-600 font-inter">Tidak ada seminar yang tersedia saat ini.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Concert Section -->
+        <div class="mb-16" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 font-poppins flex items-center justify-center gap-3" style="color: #7C3AED;">
+                    <i class="bi bi-music-note-beamed text-5xl"></i> Concert & Festival
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto font-inter">
+                    Nikmati momen tak terlupakan dengan konser dan festival terbaik
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for event in events %}
+                    {% if 'concert' in event.title|lower or 'festival' in event.title|lower or 'konser' in event.title|lower or 'music' in event.title|lower %}
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                             data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                            {% if event.flyer %}
+                                <img src="{{ event.flyer.url }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                            {% else %}
+                                <div class="w-full h-48 bg-gradient-to-r from-purple-bright to-purple-400 flex items-center justify-center">
+                                    <i class="bi bi-music-note-beamed text-6xl text-white opacity-80"></i>
+                                </div>
+                            {% endif %}
+                            <div class="p-6">
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-3"
+                                      style="background: rgba(124, 58, 237, 0.1); color: #7C3AED;">
+                                    <i class="bi bi-music-note-beamed"></i> Concert
+                                </span>
+                                <h3 class="text-xl font-bold mb-2 font-poppins" style="color: #1F2937 !important;">{{ event.title }}</h3>
+                                <p class="text-gray-600 text-sm mb-4 font-inter line-clamp-2">{{ event.description|truncatewords:15 }}</p>
+                                <div class="space-y-2 mb-4 text-sm font-inter">
+                                    <p class="font-semibold" style="color: #7C3AED;"><i class="bi bi-calendar3"></i> {{ event.event_date|date:"d M Y" }}</p>
+                                    <p class="text-gray-600"><i class="bi bi-clock"></i> {{ event.event_time|time:"H:i" }}</p>
+                                    <p class="text-gray-600"><i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}</p>
+                                </div>
+                                <a href="{% url 'events:detail' event.id %}" 
+                                   class="block w-full text-center bg-gradient-to-r from-purple-bright to-purple-400 text-white py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins">
+                                    <i class="bi bi-arrow-right-circle"></i> Book Now
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow">
+                        <i class="bi bi-calendar-x text-6xl mb-4" style="color: #7C3AED;"></i>
+                        <h3 class="text-2xl font-bold mb-2 font-poppins" style="color: #7C3AED;">Belum Ada Konser</h3>
+                        <p class="text-gray-600 font-inter">Tidak ada konser atau festival yang tersedia saat ini.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if events.has_other_pages %}
+        <nav class="mt-12 flex justify-center">
+            <ul class="flex gap-2">
+                {% if events.has_previous %}
+                    <li>
+                        <a href="?page={{ events.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
+                           class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition font-inter">
+                            Previous
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in events.paginator.page_range %}
+                    {% if events.number == num %}
+                        <li>
+                            <span class="px-4 py-2 bg-gradient-to-r from-blue-dark to-purple-bright text-white rounded-lg shadow font-inter">
+                                {{ num }}
+                            </span>
+                        </li>
+                    {% elif num > events.number|add:'-3' and num < events.number|add:'3' %}
+                        <li>
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
+                               class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition font-inter">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if events.has_next %}
+                    <li>
+                        <a href="?page={{ events.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
+                           class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition font-inter">
+                            Next
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+
+<!-- Our Partners Section -->
+<div class="bg-gradient-to-r from-indigo-50/50 to-purple-50/50 py-16 border-t border-gray-200" data-aos="fade-up">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 font-poppins" style="color: #1E3A8A;">
+                <i class="bi bi-handshake"></i> Our Partners
+            </h2>
+            <p class="text-gray-600 font-inter">Bekerja sama dengan organisasi terpercaya</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                 data-aos="zoom-in" data-aos-delay="100">
+                <i class="bi bi-building text-5xl mb-3" style="color: #1E3A8A;"></i>
+                <p class="text-sm font-semibold font-inter">Venue Partners</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                 data-aos="zoom-in" data-aos-delay="200">
+                <i class="bi bi-mortarboard text-5xl mb-3" style="color: #7C3AED;"></i>
+                <p class="text-sm font-semibold font-inter">University Partners</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                 data-aos="zoom-in" data-aos-delay="300">
+                <i class="bi bi-briefcase text-5xl mb-3" style="color: #1E3A8A;"></i>
+                <p class="text-sm font-semibold font-inter">Corporate Partners</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
+                 data-aos="zoom-in" data-aos-delay="400">
+                <i class="bi bi-music-note-beamed text-5xl mb-3" style="color: #7C3AED;"></i>
+                <p class="text-sm font-semibold font-inter">Music Partners</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        offset: 100
+    });
+
+    // Sticky Header with Scroll Effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Countdown Timer
+    {% if featured_event %}
+    const eventDateTime = '{{ featured_event.event_date|date:"Y-m-d" }}T{{ featured_event.event_time|time:"H:i:s" }}';
+    const eventDate = new Date(eventDateTime).getTime();
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = eventDate - now;
+        
+        if (distance < 0) {
+            document.getElementById('countdown-timer').innerHTML = '<div class="bg-gradient-to-r from-blue-dark to-purple-bright text-white px-6 py-4 rounded-xl text-center shadow-lg"><span class="text-xl font-bold font-poppins">Event Started!</span></div>';
+            return;
+        }
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = String(days).padStart(2, '0');
+        document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    {% endif %}
+</script>
+{% endblock %}

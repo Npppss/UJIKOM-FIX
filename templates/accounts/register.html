@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Daftar - EVENT VIBE{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-5 mb-3 sm:mb-5 px-3 sm:px-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-7">
+            <div class="glass-card fade-in-up">
+                <div class="text-center mb-3 sm:mb-4">
+                    <h2 class="text-gradient mb-2" style="font-size: 1.75rem; font-weight: 900;">
+                        <i class="bi bi-lightning-charge-fill"></i> Join the Vibe
+                    </h2>
+                    <p class="text-white-50" style="font-size: 0.9rem;">Create your account and start experiencing epic events!</p>
+                </div>
+                
+                <form method="POST" id="registerForm">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert" style="background: rgba(236, 72, 153, 0.2); border: 2px solid var(--pink-neon); border-radius: 15px; color: #fff;">
+                            <strong><i class="bi bi-exclamation-triangle"></i> Error:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-person"></i> Nama Lengkap
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-envelope"></i> Email
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-phone"></i> No. Handphone
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small mt-1">{{ form.phone.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="{{ form.education.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-mortarboard"></i> Pendidikan Terakhir
+                            </label>
+                            {{ form.education }}
+                            {% if form.education.errors %}
+                                <div class="text-danger small mt-1">{{ form.education.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.address.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                            <i class="bi bi-geo-alt"></i> Alamat Tempat Tinggal
+                        </label>
+                        {{ form.address }}
+                        {% if form.address.errors %}
+                            <div class="text-danger small mt-1">{{ form.address.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-lock"></i> Password
+                            </label>
+                            <div class="input-group">
+                                {{ form.password }}
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword" style="border-left: none; background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: var(--blue-light); z-index: 10;">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                            </div>
+                            <style>
+                                .input-group #id_password {
+                                    border-top-right-radius: 0;
+                                    border-bottom-right-radius: 0;
+                                }
+                                .input-group #togglePassword {
+                                    border-top-left-radius: 0;
+                                    border-bottom-left-radius: 0;
+                                }
+                            </style>
+                            {% if form.password.help_text %}
+                                <small class="form-text d-block mt-2" style="color: #1F2937 !important; background-color: #F3F4F6; padding: 0.75rem; border-radius: 8px; border-left: 4px solid #1E3A8A;">
+                                    <strong style="color: #1E3A8A !important; display: block; margin-bottom: 0.5rem;">
+                                        <i class="bi bi-info-circle me-1"></i> Persyaratan Password:
+                                    </strong>
+                                    <span style="color: #1F2937 !important;">{{ form.password.help_text }}</span>
+                                    <br>
+                                    <strong style="color: #1E3A8A !important; display: block; margin-top: 0.5rem;">Contoh: Password123#, MyPass123!, Test123@</strong>
+                                </small>
+                            {% endif %}
+                            <div id="password-strength" class="mt-2"></div>
+                            <div id="password-backend-errors" class="mt-1">
+                                {% if form.password.errors %}
+                                    <div class="alert small mb-0 mt-2" style="background: rgba(59, 130, 246, 0.2); border: 1px solid var(--blue-primary); border-radius: 10px; color: #fff;">
+                                        <strong><i class="bi bi-exclamation-circle"></i> Error:</strong>
+                                        {% for error in form.password.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <label for="{{ form.password_confirm.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-lock-fill"></i> Konfirmasi Password
+                            </label>
+                            <div class="input-group">
+                                {{ form.password_confirm }}
+                                <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirm" style="border-left: none; background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: var(--blue-light); z-index: 10;">
+                                    <i class="bi bi-eye" id="togglePasswordConfirmIcon"></i>
+                                </button>
+                            </div>
+                            <style>
+                                .input-group #id_password_confirm {
+                                    border-top-right-radius: 0;
+                                    border-bottom-right-radius: 0;
+                                }
+                                .input-group #togglePasswordConfirm {
+                                    border-top-left-radius: 0;
+                                    border-bottom-left-radius: 0;
+                                }
+                            </style>
+                            <div id="password-match" class="mt-2"></div>
+                            <div id="password-confirm-backend-errors" class="mt-1">
+                                {% if form.password_confirm.errors %}
+                                    <div class="alert small mb-0 mt-2" style="background: rgba(59, 130, 246, 0.2); border: 1px solid var(--blue-primary); border-radius: 10px; color: #fff;">
+                                        <strong><i class="bi bi-exclamation-circle"></i> Error:</strong>
+                                        {% for error in form.password_confirm.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if form.errors %}
+                        <div class="alert mb-3" style="background: rgba(59, 130, 246, 0.2); border: 2px solid var(--blue-primary); border-radius: 15px; color: #fff;">
+                            <strong><i class="bi bi-exclamation-triangle"></i> Mohon perbaiki error berikut:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Terms & Conditions Checkbox -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="termsCheckbox" name="terms_accepted" required>
+                            <label class="form-check-label" for="termsCheckbox" style="color: var(--blue-light); font-weight: 500;">
+                                Saya setuju dengan 
+                                <a href="{% url 'accounts:terms' %}" target="_blank" style="color: var(--cyan-bright); text-decoration: underline;">Syarat & Ketentuan</a> 
+                                dan 
+                                <a href="{% url 'accounts:privacy' %}" target="_blank" style="color: var(--cyan-bright); text-decoration: underline;">Kebijakan Privasi</a>
+                            </label>
+                        </div>
+                        <div id="termsError" class="text-danger small mt-1" style="display: none;">
+                            <i class="bi bi-exclamation-circle"></i> Anda harus menyetujui Syarat & Ketentuan dan Kebijakan Privasi untuk melanjutkan.
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-vibrant btn-lg" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none !important;">
+                            <i class="bi bi-lightning-charge-fill" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Create Account</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
+                
+                <div class="text-center">
+                    <p class="mb-2 text-white-50">
+                        Sudah punya akun? 
+                        <a href="{% url 'accounts:login' %}" class="text-gradient" style="text-decoration: none; font-weight: 600;">
+                            Login sekarang <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </p>
+                    <p class="mb-0 text-white-50 small">
+                        <a href="{% url 'accounts:terms' %}" class="text-white-50" style="text-decoration: none;">Syarat & Ketentuan</a> | 
+                        <a href="{% url 'accounts:privacy' %}" class="text-white-50" style="text-decoration: none;">Kebijakan Privasi</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordField = document.querySelector('#id_password');
+    const passwordConfirmField = document.querySelector('#id_password_confirm');
+    const strengthDiv = document.getElementById('password-strength');
+    const matchDiv = document.getElementById('password-match');
+    
+    if (passwordField) {
+        passwordField.addEventListener('input', function() {
+            const password = this.value;
+            const errors = [];
+            const checks = {
+                length: password.length >= 8,
+                lowercase: /[a-z]/.test(password),
+                uppercase: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[@$!%*?&#\\-_+=()\\[\\]{}|\\\\:;\"'<>,./~]/.test(password)
+            };
+            
+            if (!checks.length) errors.push('Minimal 8 karakter');
+            if (!checks.lowercase) errors.push('Huruf kecil (a-z)');
+            if (!checks.uppercase) errors.push('Huruf besar (A-Z)');
+            if (!checks.number) errors.push('Angka (0-9)');
+            if (!checks.special) errors.push('Karakter spesial');
+            
+            if (password.length === 0) {
+                strengthDiv.innerHTML = '';
+            } else             if (errors.length === 0) {
+                strengthDiv.innerHTML = '<small style="color: var(--cyan-bright);"><i class="bi bi-check-circle"></i> Password valid</small>';
+                const backendErrors = document.getElementById('password-backend-errors');
+                if (backendErrors) backendErrors.innerHTML = '';
+            } else {
+                strengthDiv.innerHTML = '<small style="color: var(--blue-neon);"><i class="bi bi-x-circle"></i> ' + errors.join(', ') + '</small>';
+            }
+        });
+    }
+    
+    if (passwordField && passwordConfirmField) {
+        passwordConfirmField.addEventListener('input', function() {
+            const password = passwordField.value;
+            const confirm = this.value;
+            
+            const backendErrors = document.getElementById('password-confirm-backend-errors');
+            if (backendErrors) backendErrors.innerHTML = '';
+            
+            if (confirm.length === 0) {
+                matchDiv.innerHTML = '';
+            } else if (password === confirm) {
+                matchDiv.innerHTML = '<small style="color: var(--cyan-bright);"><i class="bi bi-check-circle"></i> Password cocok</small>';
+            } else {
+                matchDiv.innerHTML = '<small style="color: var(--blue-neon);"><i class="bi bi-x-circle"></i> Password tidak cocok</small>';
+            }
+        });
+    }
+    
+    // Terms checkbox validation
+    const form = document.getElementById('registerForm');
+    const termsCheckbox = document.getElementById('termsCheckbox');
+    const termsError = document.getElementById('termsError');
+    
+    if (form && termsCheckbox) {
+        form.addEventListener('submit', function(e) {
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                termsError.style.display = 'block';
+                termsCheckbox.focus();
+                return false;
+            } else {
+                termsError.style.display = 'none';
+            }
+        });
+        
+        termsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                termsError.style.display = 'none';
+            }
+        });
+    }
+    
+    // Toggle password visibility
+    const passwordField = document.querySelector('#id_password');
+    const passwordConfirmField = document.querySelector('#id_password_confirm');
+    const togglePassword = document.getElementById('togglePassword');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+    const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
+    const togglePasswordConfirmIcon = document.getElementById('togglePasswordConfirmIcon');
+    
+    if (passwordField && togglePassword) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            
+            // Toggle icon
+            if (type === 'password') {
+                togglePasswordIcon.classList.remove('bi-eye-slash');
+                togglePasswordIcon.classList.add('bi-eye');
+            } else {
+                togglePasswordIcon.classList.remove('bi-eye');
+                togglePasswordIcon.classList.add('bi-eye-slash');
+            }
+        });
+    }
+    
+    if (passwordConfirmField && togglePasswordConfirm) {
+        togglePasswordConfirm.addEventListener('click', function() {
+            const type = passwordConfirmField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordConfirmField.setAttribute('type', type);
+            
+            // Toggle icon
+            if (type === 'password') {
+                togglePasswordConfirmIcon.classList.remove('bi-eye-slash');
+                togglePasswordConfirmIcon.classList.add('bi-eye');
+            } else {
+                togglePasswordConfirmIcon.classList.remove('bi-eye');
+                togglePasswordConfirmIcon.classList.add('bi-eye-slash');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

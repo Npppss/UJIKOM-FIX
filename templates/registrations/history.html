@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Riwayat Kegiatan - Sistem Pendaftaran Kegiatan{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-4 mb-3 sm:mb-5 px-3 sm:px-4">
+    <h2 class="mb-3 sm:mb-4" style="font-size: 1.5rem;">
+        <i class="bi bi-clock-history"></i> Riwayat Kegiatan Saya
+    </h2>
+    
+    {% if registrations %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-primary">
+                    <tr>
+                        <th class="d-none d-md-table-cell">No</th>
+                        <th>Kegiatan</th>
+                        <th class="d-none d-lg-table-cell">Tanggal</th>
+                        <th class="d-none d-lg-table-cell">Waktu</th>
+                        <th class="d-none d-md-table-cell">Lokasi</th>
+                        <th>Status</th>
+                        <th class="d-none d-md-table-cell">Status Pembayaran</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registration in registrations %}
+                        <tr>
+                            <td class="d-none d-md-table-cell">{{ forloop.counter }}</td>
+                            <td>
+                                <strong>{{ registration.event.title }}</strong>
+                                <div class="d-md-none mt-1">
+                                    <small class="text-muted d-block">
+                                        <i class="bi bi-calendar3"></i> {{ registration.event.event_date|date:"d M Y" }} {{ registration.event.event_time|time:"H:i" }}
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        <i class="bi bi-geo-alt"></i> {{ registration.event.location|truncatewords:3 }}
+                                    </small>
+                                </div>
+                            </td>
+                            <td class="d-none d-lg-table-cell">{{ registration.event.event_date|date:"d M Y" }}</td>
+                            <td class="d-none d-lg-table-cell">{{ registration.event.event_time|time:"H:i" }}</td>
+                            <td class="d-none d-md-table-cell">{{ registration.event.location|truncatewords:3 }}</td>
+                            <td>
+                                {% if registration.status == 'attended' %}
+                                    <span class="badge bg-success">Hadir</span>
+                                {% elif registration.status == 'registered' %}
+                                    <span class="badge bg-warning">Terdaftar</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Absen</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if registration.event.price and registration.event.price > 0 %}
+                                    {% if registration.payment_status == 'approved' %}
+                                        <span class="badge bg-success">Pembayaran Disetujui</span>
+                                        {% if registration.payment_validated_by %}
+                                            <br><small class="text-muted">Oleh: {{ registration.payment_validated_by.name }}</small>
+                                        {% endif %}
+                                        {% if registration.payment_validated_at %}
+                                            <br><small class="text-muted">{{ registration.payment_validated_at|date:"d M Y H:i" }}</small>
+                                        {% endif %}
+                                    {% elif registration.payment_status == 'rejected' %}
+                                        <span class="badge bg-danger">Pembayaran Ditolak</span>
+                                        {% if registration.payment_rejection_reason %}
+                                            <br><small class="text-danger">{{ registration.payment_rejection_reason|truncatewords:5 }}</small>
+                                        {% endif %}
+                                        {% if registration.payment_validated_by %}
+                                            <br><small class="text-muted">Oleh: {{ registration.payment_validated_by.name }}</small>
+                                        {% endif %}
+                                        {% if registration.payment_validated_at %}
+                                            <br><small class="text-muted">{{ registration.payment_validated_at|date:"d M Y H:i" }}</small>
+                                        {% endif %}
+                                    {% elif registration.payment_status == 'pending' %}
+                                        <span class="badge bg-warning">Menunggu Validasi</span>
+                                        <br><small class="text-muted">Event Organizer akan memvalidasi</small>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Belum Upload</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">Tidak Diperlukan</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'events:detail' registration.event.id %}" class="btn btn-outline-primary" title="Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if registration.status == 'registered' %}
+                                        {% if registration.event.can_be_attended %}
+                                            {% if registration.event.price and registration.event.price > 0 %}
+                                                {% if registration.payment_status == 'approved' %}
+                                                    <a href="{% url 'registrations:attendance' registration.event.id %}" class="btn btn-outline-success" title="Isi Daftar Hadir - Event dimulai: {{ registration.event.event_date|date:'d M Y' }} {{ registration.event.event_time|time:'H:i' }} WIB">
+                                                        <i class="bi bi-check-circle"></i> Hadir
+                                                    </a>
+                                                {% else %}
+                                                    <button class="btn btn-outline-secondary" disabled title="Tunggu validasi pembayaran. Event dimulai: {{ registration.event.event_date|date:'d M Y' }} {{ registration.event.event_time|time:'H:i' }} WIB">
+                                                        <i class="bi bi-clock-history"></i> Tunggu Validasi
+                                                    </button>
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="{% url 'registrations:attendance' registration.event.id %}" class="btn btn-outline-success" title="Isi Daftar Hadir - Event dimulai: {{ registration.event.event_date|date:'d M Y' }} {{ registration.event.event_time|time:'H:i' }} WIB">
+                                                    <i class="bi bi-check-circle"></i> Hadir
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if registration.event.status == 'completed' or registration.event.status == 'cancelled' %}
+                                                <button class="btn btn-outline-secondary" disabled title="Event sudah selesai atau dibatalkan. Event dimulai: {{ registration.event.event_date|date:'d M Y' }} {{ registration.event.event_time|time:'H:i' }} WIB">
+                                                    <i class="bi bi-x-circle"></i> Event Selesai
+                                                </button>
+                                            {% else %}
+                                                <button class="btn btn-outline-secondary" disabled data-bs-toggle="tooltip" data-bs-placement="top" title="Event dimulai: {{ registration.event.event_date|date:'d M Y' }} {{ registration.event.event_time|time:'H:i' }} WIB. Daftar hadir dapat diisi setelah event dimulai.">
+                                                    <i class="bi bi-clock-history"></i> Belum Waktunya
+                                                </button>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if registration.status == 'attended' %}
+                                        <a href="{% url 'certificates:list' %}" class="btn btn-outline-info" title="Sertifikat - Event dimulai: {{ registration.event.event_date|date:'d M Y' }} {{ registration.event.event_time|time:'H:i' }} WIB">
+                                            <i class="bi bi-award"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                {% if registration.status == 'registered' and not registration.event.can_be_attended and registration.event.status != 'completed' and registration.event.status != 'cancelled' %}
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="bi bi-info-circle"></i> Event dimulai: {{ registration.event.event_date|date:"d M Y" }} {{ registration.event.event_time|time:"H:i" }} WIB
+                                    </small>
+                                {% endif %}
+                                {% if registration.status == 'registered' %}
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="bi bi-person-badge"></i> Event Organizer: 
+                                        <a href="mailto:{{ registration.event.user.email }}" class="text-decoration-none" title="Email: {{ registration.event.user.email }} | Phone: {{ registration.event.user.phone }}">
+                                            {{ registration.event.user.name }}
+                                        </a>
+                                    </small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> Belum ada riwayat kegiatan.
+            <a href="{% url 'events:catalog' %}" class="alert-link">Cari kegiatan</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+// Aktifkan tooltip Bootstrap
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Review Laporan Event - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="mb-4">
+        <h1 class="mb-0" style="font-size: 2rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+Review Laporan Event
+        </h1>
+        <p class="text-muted mt-2">Tinjau dan tindak lanjuti laporan dari user</p>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    
+    {% if reports %}
+        <div class="row">
+            {% for report in reports %}
+                <div class="col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1" style="font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                                        {{ report.event.title }}
+                                    </h5>
+                                    <p class="text-muted small mb-0">
+                                        <i class="bi bi-person me-1"></i> {{ report.reporter.name }}
+                                    </p>
+                                </div>
+                                <span class="badge px-3 py-1" style="background-color: #FEF3C7; color: #92400E; font-weight: 500; border-radius: 6px;">
+                                    {{ report.get_status_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <span class="badge px-3 py-1 mb-2" style="background-color: #DBEAFE; color: #1E40AF; font-weight: 500; border-radius: 6px;">
+                                    {{ report.get_reason_display }}
+                                </span>
+                            </div>
+                            
+                            <p class="mb-3" style="color: #4B5563; line-height: 1.6;">
+                                {{ report.description|truncatewords:30 }}
+                            </p>
+                            
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar me-1"></i> {{ report.created_at|date:"d M Y H:i" }}
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'events:approve_report' report.id %}" class="btn btn-sm px-3" style="background-color: #10B981 !important; color: #FFFFFF !important; border-radius: 6px; font-weight: 600 !important; border: 2px solid #10B981 !important; text-decoration: none;">
+                                    <span style="color: #FFFFFF !important;">Setujui</span>
+                                </a>
+                                <a href="{% url 'events:reject_report' report.id %}" class="btn btn-sm px-3" style="background-color: #EF4444 !important; color: #FFFFFF !important; border-radius: 6px; font-weight: 600 !important; border: 2px solid #EF4444 !important; text-decoration: none;">
+                                    <span style="color: #FFFFFF !important;">Tolak</span>
+                                </a>
+                                <a href="{% url 'events:detail' report.event.id %}" class="btn btn-sm px-3" style="background-color: #3B82F6 !important; color: #FFFFFF !important; border-radius: 6px; font-weight: 600 !important; border: 2px solid #3B82F6 !important; text-decoration: none;">
+                                    <span style="color: #FFFFFF !important;">Lihat Event</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 12px;">
+            <div class="card-body">
+                <i class="bi bi-inbox mb-3" style="font-size: 3rem; color: #9CA3AF;"></i>
+                <p class="text-muted mb-0">Tidak ada laporan yang menunggu review.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

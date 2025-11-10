@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Berita - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-5 mb-3 sm:mb-5 px-3 sm:px-4">
+    <!-- Header Section -->
+    <div class="text-center mb-4 sm:mb-5">
+        <h1 class="mb-2 sm:mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+            Berita Event
+        </h1>
+        <p class="text-muted" style="font-size: 0.95rem;">Temukan informasi lengkap tentang event-event menarik yang akan datang</p>
+    </div>
+    
+    <!-- Action Buttons (Admin/Organizer) -->
+    {% if user.is_authenticated and user.role in 'admin,event_organizer'|make_list %}
+        <div class="mb-3 sm:mb-4 text-center sm:text-end">
+            <a href="{% url 'events:news_create' %}" class="btn d-inline-block" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.625rem 1.25rem; text-decoration: none; font-size: 0.9rem;">
+                <i class="bi bi-plus-circle me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Tulis Berita</span>
+            </a>
+        </div>
+    {% endif %}
+    
+    <!-- Search Bar & Category Filter -->
+    <div class="row mb-3 sm:mb-4 g-2">
+        <div class="col-12 col-md-8 mb-2 md:mb-0">
+            <form method="GET" action="{% url 'events:news_list' %}">
+                <div class="input-group" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 25px; overflow: hidden;">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        class="form-control" 
+                        placeholder="Cari berita..." 
+                        value="{{ search_query }}"
+                        style="border: none; padding: 0.625rem 1rem; font-size: 0.9rem;"
+                    >
+                    <button 
+                        type="submit" 
+                        class="btn" 
+                        style="background-color: #1E3A8A; color: #FFD700; font-weight: 700; padding: 0.625rem 1.5rem; border: none; font-size: 0.9rem;"
+                    >
+                        Cari
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="btn-group w-100" role="group" style="flex-wrap: wrap;">
+                <a href="{% url 'events:news_list' %}{% if search_query %}?search={{ search_query }}{% endif %}" 
+                   class="btn {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+                   style="{% if not category %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 8px 0 0 8px;">
+                    Semua
+                </a>
+                <a href="{% url 'events:news_list' %}?category=seminar{% if search_query %}&search={{ search_query }}{% endif %}" 
+                   class="btn {% if category == 'seminar' %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+                   style="{% if category == 'seminar' %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 0;">
+                    Seminar
+                </a>
+                <a href="{% url 'events:news_list' %}?category=concert{% if search_query %}&search={{ search_query }}{% endif %}" 
+                   class="btn {% if category == 'concert' %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+                   style="{% if category == 'concert' %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 0 8px 8px 0;">
+                    Konser
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- News Grid -->
+    {% if news_list %}
+        <div class="row g-4">
+            {% for news in news_list %}
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease; overflow: hidden;" onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+                        <!-- Featured Image -->
+                        {% if news.featured_image %}
+                            <img src="{{ news.featured_image.url }}" class="card-img-top" alt="{{ news.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px; background: {% if news.category == 'seminar' %}linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%){% else %}linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%){% endif %};">
+                                <i class="bi bi-newspaper text-white" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body p-4">
+                            <!-- Category Badge -->
+                            <div class="mb-3">
+                                <span class="badge px-3 py-2" style="background-color: {% if news.category == 'seminar' %}#1E3A8A{% else %}#7C3AED{% endif %}; color: #FFFFFF; font-weight: 600; border-radius: 6px;">
+                                    {{ news.get_category_display }}
+                                </span>
+                            </div>
+                            
+                            <!-- News Title -->
+                            <h5 class="card-title mb-3" style="font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif; font-size: 1.25rem; line-height: 1.4;">
+                                <a href="{% url 'events:news_detail' news.id %}" style="color: #1F2937; text-decoration: none;">
+                                    {{ news.title }}
+                                </a>
+                            </h5>
+                            
+                            <!-- News Content Preview -->
+                            <p class="card-text text-muted mb-3" style="font-size: 0.9rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ news.content|truncatewords:20 }}
+                            </p>
+                            
+                            <!-- News Info -->
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2" style="color: #4B5563; font-size: 0.875rem;">
+                                    <i class="bi bi-person me-2" style="color: #1E3A8A;"></i>
+                                    <span>{{ news.author.name }}</span>
+                                </div>
+                                <div class="d-flex align-items-center" style="color: #4B5563; font-size: 0.875rem;">
+                                    <i class="bi bi-calendar3 me-2" style="color: #1E3A8A;"></i>
+                                    <span>{{ news.created_at|date:"d M Y" }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Button -->
+                            <a href="{% url 'events:news_detail' news.id %}" 
+                               class="btn w-100 mt-3" 
+                               style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem; text-decoration: none !important; border: none;">
+                                <span style="color: #FFFFFF !important;">Baca Selengkapnya</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if news_list.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if news_list.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ news_list.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in news_list.paginator.page_range %}
+                        {% if news_list.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link" style="background-color: #1E3A8A; border-color: #1E3A8A;">{{ num }}</span>
+                            </li>
+                        {% elif num > news_list.number|add:'-3' and num < news_list.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if news_list.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ news_list.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ news_list.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #9CA3AF;"></i>
+            <h3 class="mt-3 mb-2" style="color: #1F2937; font-weight: 600;">Tidak ada berita</h3>
+            <p class="text-muted">Belum ada berita yang dipublikasikan.{% if user.is_authenticated and user.role in 'admin,event_organizer'|make_list %} <a href="{% url 'events:news_create' %}">Tulis berita pertama</a>{% endif %}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

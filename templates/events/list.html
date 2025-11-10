@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Daftar Kegiatan - EVENT VIBE{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="text-gradient mb-0" style="font-size: 2.5rem; font-weight: 900;">
+                <i class="bi bi-calendar-check-fill"></i> 
+                {% if user.is_admin %}
+                    Semua Kegiatan
+                {% else %}
+                    Kegiatan Saya
+                {% endif %}
+            </h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'events:create' %}" class="btn btn-vibrant">
+                <i class="bi bi-plus-circle"></i> Tambah Kegiatan
+            </a>
+        </div>
+    </div>
+    
+    {% if events %}
+        <div class="glass-card fade-in-up">
+            <div class="table-responsive">
+                <table class="table table-vibrant">
+                    <thead>
+                        <tr>
+                            <th>Judul Kegiatan</th>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Lokasi</th>
+                            <th>Status</th>
+                            <th>Peserta</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>
+                                    <strong>{{ event.title }}</strong>
+                                    {% if event.flyer %}
+                                        <i class="bi bi-image" style="color: var(--pink-neon);"></i>
+                                    {% endif %}
+                                </td>
+                                <td>{{ event.event_date|date:"d M Y" }}</td>
+                                <td>{{ event.event_time|time:"H:i" }}</td>
+                                <td>{{ event.location|truncatewords:3 }}</td>
+                                <td>
+                                    {% if event.status == 'published' %}
+                                        <span class="badge-vibrant" style="background: linear-gradient(135deg, var(--blue-primary) 0%, var(--cyan-bright) 100%);">Published</span>
+                                    {% elif event.status == 'draft' %}
+                                        <span class="badge-vibrant" style="background: rgba(255,255,255,0.3);">Draft</span>
+                                    {% else %}
+                                        <span class="badge-vibrant" style="background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-primary) 100%);">{{ event.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge-vibrant" style="background: linear-gradient(135deg, var(--blue-neon) 0%, var(--blue-bright) 100%);">
+                                        <i class="bi bi-people"></i> {{ event.registrations.count }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'events:detail' event.id %}" class="btn btn-sm btn-vibrant" title="Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{% url 'events:edit' event.id %}" class="btn btn-sm btn-pink" style="background: linear-gradient(135deg, var(--blue-neon) 0%, var(--cyan-bright) 100%);" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="{% url 'events:participants' event.id %}" class="btn btn-sm btn-blue" title="Peserta">
+                                            <i class="bi bi-people"></i>
+                                        </a>
+                                        <form method="POST" action="{% url 'events:delete' event.id %}" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kegiatan ini?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm" style="background: rgba(37, 99, 235, 0.2); border: 1px solid var(--blue-dark); color: #fff;" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-card text-center py-5 fade-in-up">
+            <i class="bi bi-calendar-x" style="font-size: 4rem; color: var(--blue-neon); margin-bottom: 1rem;"></i>
+            <h3 class="text-gradient mb-3">Belum Ada Kegiatan</h3>
+            <p class="text-white-50 mb-4">Mulai dengan membuat kegiatan pertama Anda!</p>
+            <a href="{% url 'events:create' %}" class="btn btn-vibrant">
+                <i class="bi bi-plus-circle"></i> Buat Kegiatan Pertama
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Beranda - Dynamic Experience{% endblock %}
+
+{% block extra_css %}
+<!-- TailwindCSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+    
+    /* Custom Tailwind Config */
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'blue-dark': '#1E3A8A',
+                    'purple-bright': '#7C3AED',
+                },
+                fontFamily: {
+                    'poppins': ['Poppins', 'sans-serif'],
+                    'inter': ['Inter', 'sans-serif'],
+                },
+            }
+        }
+    }
+    
+    /* Smooth fade-in animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    .fade-in-up-delay-1 {
+        animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        opacity: 0;
+    }
+    
+    .fade-in-up-delay-2 {
+        animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        opacity: 0;
+    }
+    
+    .fade-in-up-delay-3 {
+        animation: fadeInUp 0.8s ease-out 0.6s forwards;
+        opacity: 0;
+    }
+    
+    /* Dark mode styles */
+    [data-theme="dark"] {
+        --bg-primary: #1F2937;
+        --text-primary: #F9FAFB;
+        --text-secondary: #D1D5DB;
+    }
+    
+    /* Smooth scroll */
+    html {
+        scroll-behavior: smooth;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] sm:min-h-screen flex items-center justify-center text-center text-white overflow-hidden pt-20 sm:pt-0"
+         style="background: linear-gradient(135deg, #1E3A8A 0%, #4C1D95 50%, #7C3AED 100%);">
+    
+    
+    <!-- Hero Content -->
+    <div class="relative z-10 px-4 sm:px-6 w-full max-w-5xl mx-auto">
+        <!-- Main Title -->
+        <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 font-poppins drop-shadow-2xl fade-in-up">
+            Dynamic Experience
+        </h1>
+        
+        <!-- Subtitle -->
+        <p class="text-base sm:text-lg md:text-2xl lg:text-3xl mb-6 sm:mb-8 md:mb-12 font-inter opacity-95 font-medium fade-in-up-delay-1 px-2">
+            Where Knowledge Meets Entertainment
+        </p>
+        
+        <!-- Search Bar -->
+        <div class="max-w-4xl mx-auto mb-6 sm:mb-8 fade-in-up-delay-2">
+            <form method="GET" action="{% url 'events:catalog' %}" 
+                  class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-full shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-3xl">
+                <div class="flex flex-col sm:flex-row items-stretch">
+                    <!-- Search Input -->
+                    <div class="flex-1 flex items-center px-4 sm:px-6 py-3 sm:py-4 border-b sm:border-b-0 sm:border-r border-gray-200">
+                        <input type="text" 
+                               name="search" 
+                               value="{{ search_query|default:'' }}"
+                               placeholder="Cari event..." 
+                               class="flex-1 outline-none text-gray-800 bg-transparent font-inter text-sm sm:text-base md:text-lg placeholder-gray-400 focus:placeholder-gray-300 transition-all w-full"
+                               autocomplete="off">
+                    </div>
+                    
+                    <!-- Category Dropdown -->
+                    <div class="relative flex items-center px-4 sm:px-6 py-3 sm:py-4 border-b sm:border-b-0 sm:border-r border-gray-200 bg-white/50">
+                        <select name="category" 
+                                class="appearance-none outline-none text-gray-800 bg-transparent font-inter text-sm sm:text-base md:text-lg cursor-pointer pr-8 sm:pr-10 focus:text-blue-dark transition-colors w-full font-medium"
+                                style="background-image: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Cpath fill=%22none%22 stroke=%22%231E3A8A%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222%22 d=%22M2 5l6 6 6-6%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 12px;">
+                            <option value="">Semua Kategori</option>
+                            {% if categories %}
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="seminar">Seminar & Conference</option>
+                                <option value="concert">Concert & Festival</option>
+                            {% endif %}
+                        </select>
+                        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <button type="submit" 
+                            class="px-6 sm:px-8 py-3 sm:py-4 font-semibold font-inter text-sm sm:text-base md:text-lg transition-all duration-300 hover:shadow-lg active:scale-95 rounded-b-2xl sm:rounded-b-none sm:rounded-r-full"
+                            style="background-color: #1E3A8A; color: #FFD700; font-weight: 700;">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- CTA Button -->
+        <div class="fade-in-up-delay-3">
+            <a href="#events" 
+               class="inline-block bg-gradient-to-r from-blue-dark to-purple-bright text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg md:text-xl hover:from-blue-800 hover:to-purple-600 hover:scale-105 hover:shadow-2xl transition-all duration-300 font-poppins">
+                <i class="bi bi-arrow-down-circle mr-2"></i> Explore Events
+            </a>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden sm:block">
+        <i class="bi bi-chevron-down text-2xl sm:text-3xl text-white/70"></i>
+    </div>
+</section>
+
+<!-- Featured Events Section -->
+<section id="events" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 font-poppins" style="background: linear-gradient(135deg, #1E3A8A, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Event Terbaru
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-inter">
+                Temukan seminar dan konser terbaik untuk pengalaman tak terlupakan
+            </p>
+        </div>
+        
+        <!-- Event Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {% if featured_events %}
+                {% for event in featured_events|slice:":6" %}
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100 dark:border-gray-700"
+                         data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
+                        {% if event.flyer %}
+                            <img src="{{ event.flyer.url }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                        {% else %}
+                            <div class="w-full h-48 bg-gradient-to-r {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}from-blue-dark to-blue-600{% else %}from-purple-bright to-purple-400{% endif %} flex items-center justify-center">
+                                <i class="bi {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}bi-mortarboard{% else %}bi-music-note-beamed{% endif %} text-6xl text-white opacity-80"></i>
+                            </div>
+                        {% endif %}
+                        <div class="p-6">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold mb-3"
+                                  style="background: {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}rgba(30, 58, 138, 0.1); color: #1E3A8A;{% else %}rgba(124, 58, 237, 0.1); color: #7C3AED;{% endif %};">
+                                <i class="bi {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}bi-mortarboard{% else %}bi-music-note-beamed{% endif %}"></i>
+                                {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}Seminar{% else %}Concert{% endif %}
+                            </span>
+                            <h3 class="text-xl font-bold mb-2 font-poppins" style="color: #1F2937 !important;">{{ event.title }}</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 font-inter line-clamp-2">{{ event.description|truncatewords:15 }}</p>
+                            <div class="space-y-2 mb-4 text-sm font-inter">
+                                <p class="font-semibold {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}text-blue-dark{% else %}text-purple-bright{% endif %}">
+                                    <i class="bi bi-calendar3"></i> {{ event.event_date|date:"d M Y" }}
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    <i class="bi bi-clock"></i> {{ event.event_time|time:"H:i" }}
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    <i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}
+                                </p>
+                            </div>
+                            <a href="{% url 'events:detail' event.id %}" 
+                               class="block w-full text-center py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins"
+                               style="background: {% if 'seminar' in event.title|lower or 'conference' in event.title|lower %}linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%){% else %}linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%){% endif %} !important; color: #FFFFFF !important; font-weight: 700 !important; text-decoration: none !important;">
+                                <i class="bi bi-arrow-right-circle" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Book Now</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center py-12 bg-white dark:bg-gray-800 rounded-2xl shadow">
+                    <i class="bi bi-calendar-x text-6xl mb-4" style="color: #1E3A8A;"></i>
+                    <h3 class="text-2xl font-bold mb-2 font-poppins dark:text-white">Belum Ada Event</h3>
+                    <p class="text-gray-600 dark:text-gray-300 font-inter">Tidak ada event yang tersedia saat ini.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- View All Button -->
+        {% if featured_events %}
+            <div class="text-center mt-12" data-aos="fade-up">
+                <a href="{% url 'events:catalog' %}" 
+                   class="inline-block bg-gradient-to-r from-blue-dark to-purple-bright text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-poppins">
+                    Lihat Semua Event <i class="bi bi-arrow-right ml-2"></i>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Category Sections -->
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Seminar Section -->
+        <div class="mb-16" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center gap-3 mb-4">
+                    <i class="bi bi-mortarboard text-5xl" style="color: #1E3A8A;"></i>
+                    <h2 class="text-4xl md:text-5xl font-bold font-poppins text-white px-6 py-3 rounded-lg" style="background-color: #1E3A8A;">
+                        Seminar & Conference
+                    </h2>
+                </div>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-inter">
+                    Tingkatkan pengetahuan dan keterampilan Anda dengan seminar berkualitas
+                </p>
+            </div>
+            <div class="text-center">
+                <a href="{% url 'events:catalog' %}?category=seminar" 
+                   class="inline-block text-white px-8 py-4 rounded-lg font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-poppins" style="background-color: #1E3A8A;">
+                    Jelajahi Seminar <i class="bi bi-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Concert Section -->
+        <div data-aos="fade-up">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center gap-3 mb-4">
+                    <i class="bi bi-music-note-beamed text-5xl" style="color: #7C3AED;"></i>
+                    <h2 class="text-4xl md:text-5xl font-bold font-poppins text-white px-6 py-3 rounded-lg" style="background-color: #7C3AED;">
+                        Concert & Festival
+                    </h2>
+                </div>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-inter">
+                    Nikmati momen tak terlupakan dengan konser dan festival terbaik
+                </p>
+            </div>
+            <div class="text-center">
+                <a href="{% url 'events:catalog' %}?category=concert" 
+                   class="inline-block text-white px-8 py-4 rounded-lg font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-poppins" style="background-color: #7C3AED;">
+                    Jelajahi Konser <i class="bi bi-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true,
+        offset: 100
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
+

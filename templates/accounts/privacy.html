@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kebijakan Privasi - Dynamic Experience{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-5">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                            <i class="bi bi-shield-check me-2" style="color: #1E3A8A;"></i> Kebijakan Privasi
+                        </h1>
+                        <p class="text-muted mb-0">Terakhir diperbarui: {{ "now"|date:"d F Y" }}</p>
+                    </div>
+                    
+                    <hr class="my-4" style="border-color: #E5E7EB;">
+                    
+                    <!-- Content -->
+                    <div style="color: #1F2937; line-height: 1.8; font-family: 'Inter', sans-serif;">
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                1. Pengenalan
+                            </h2>
+                            <p class="mb-3">
+                                <strong>Dynamic Experience</strong> menghormati privasi Anda dan berkomitmen untuk melindungi informasi pribadi yang Anda berikan kepada kami. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                2. Informasi yang Kami Kumpulkan
+                            </h2>
+                            <p class="mb-3">Kami mengumpulkan informasi berikut:</p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li><strong>Informasi Pribadi:</strong> Nama, email, nomor telepon, alamat, dan pendidikan terakhir</li>
+                                <li><strong>Informasi Akun:</strong> Username, password (yang di-hash), dan preferensi akun</li>
+                                <li><strong>Informasi Event:</strong> Data pendaftaran event, kehadiran, dan sertifikat</li>
+                                <li><strong>Informasi Teknis:</strong> Alamat IP, jenis browser, dan data penggunaan platform</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                3. Cara Kami Menggunakan Informasi
+                            </h2>
+                            <p class="mb-3">Kami menggunakan informasi yang dikumpulkan untuk:</p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Menyediakan dan meningkatkan layanan platform</li>
+                                <li>Memproses pendaftaran event dan mengelola partisipasi</li>
+                                <li>Mengirimkan notifikasi dan komunikasi terkait event</li>
+                                <li>Menerbitkan dan mengelola sertifikat partisipasi</li>
+                                <li>Meningkatkan keamanan dan mencegah penipuan</li>
+                                <li>Mematuhi kewajiban hukum dan regulasi</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                4. Perlindungan Data
+                            </h2>
+                            <p class="mb-3">
+                                Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang sesuai untuk melindungi informasi pribadi Anda dari akses, penggunaan, atau pengungkapan yang tidak sah. Ini termasuk:
+                            </p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Enkripsi data dalam transmisi dan penyimpanan</li>
+                                <li>Kontrol akses yang ketat ke sistem dan data</li>
+                                <li>Pemantauan keamanan secara berkala</li>
+                                <li>Pelatihan staf tentang privasi dan keamanan data</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                5. Berbagi Informasi
+                            </h2>
+                            <p class="mb-3">
+                                Kami tidak menjual, menyewakan, atau memperdagangkan informasi pribadi Anda kepada pihak ketiga. Kami dapat membagikan informasi dalam situasi berikut:
+                            </p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Dengan penyelenggara event untuk keperluan manajemen event</li>
+                                <li>Dengan penyedia layanan yang membantu operasi platform (dengan perjanjian kerahasiaan)</li>
+                                <li>Ketika diwajibkan oleh hukum atau untuk melindungi hak dan keamanan kami</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                6. Hak Anda
+                            </h2>
+                            <p class="mb-3">Anda memiliki hak untuk:</p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Mengakses dan memperoleh salinan informasi pribadi Anda</li>
+                                <li>Memperbaiki informasi yang tidak akurat atau tidak lengkap</li>
+                                <li>Meminta penghapusan informasi pribadi Anda (dengan batasan hukum tertentu)</li>
+                                <li>Menolak pemrosesan data tertentu</li>
+                                <li>Mengajukan keluhan kepada otoritas perlindungan data</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                7. Cookie dan Teknologi Pelacakan
+                            </h2>
+                            <p class="mb-3">
+                                Kami menggunakan cookie dan teknologi serupa untuk meningkatkan pengalaman pengguna, menganalisis penggunaan platform, dan menyesuaikan konten. Anda dapat mengatur browser Anda untuk menolak cookie, namun ini dapat mempengaruhi fungsionalitas platform.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                8. Retensi Data
+                            </h2>
+                            <p class="mb-3">
+                                Kami menyimpan informasi pribadi Anda selama diperlukan untuk tujuan yang dijelaskan dalam kebijakan ini, atau sesuai dengan persyaratan hukum. Setelah periode retensi berakhir, data akan dihapus atau dianonimkan dengan aman.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                9. Perubahan Kebijakan
+                            </h2>
+                            <p class="mb-3">
+                                Kami dapat memperbarui kebijakan privasi ini dari waktu ke waktu. Perubahan akan dipublikasikan di halaman ini dengan tanggal pembaruan yang direvisi. Kami menyarankan Anda untuk meninjau kebijakan ini secara berkala.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                10. Kontak
+                            </h2>
+                            <p class="mb-3">
+                                Jika Anda memiliki pertanyaan atau kekhawatiran tentang kebijakan privasi ini atau praktik privasi kami, silakan hubungi kami di:
+                            </p>
+                            <p class="mb-0">
+                                <strong>Email:</strong> privacy@dynamicexperience.com<br>
+                                <strong>Telepon:</strong> +62 123 456 7890<br>
+                                <strong>Alamat:</strong> Jakarta, Indonesia
+                            </p>
+                        </section>
+                    </div>
+                    
+                    <hr class="my-4" style="border-color: #E5E7EB;">
+                    
+                    <!-- Footer Actions -->
+                    <div class="text-center">
+                        <a href="{% url 'accounts:register' %}" class="btn px-5 py-2" style="background-color: #1E3A8A; color: #FFFFFF; border-radius: 8px; font-weight: 500; border: none; text-decoration: none;">
+                            <i class="bi bi-arrow-left me-2"></i> Kembali ke Pendaftaran
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

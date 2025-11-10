@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Tanya Dexy - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-4 mb-3 sm:mb-5 px-3 sm:px-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+                <!-- Header -->
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%); padding: 1.5rem;">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2 sm:me-3">
+                            <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-robot" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="mb-1" style="font-weight: 700; font-size: 1.5rem;">Dexy</h2>
+                            <p class="mb-0" style="opacity: 0.9; font-size: 0.875rem;">Asisten AI untuk Dynamic Experience</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Container -->
+                <div class="card-body p-0" style="height: 600px; display: flex; flex-direction: column;">
+                    <!-- Messages Area -->
+                    <div id="chat-messages" class="flex-grow-1 p-4" style="overflow-y: auto; background: #F9FAFB;">
+                        <div class="alert alert-info mb-3" style="background-color: #DBEAFE; border: 1px solid #3B82F6; border-radius: 10px;">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Halo! Saya Dexy.</strong> Saya di sini untuk membantu Anda dengan pertanyaan tentang platform Dynamic Experience. 
+                            Silakan tanyakan apa saja tentang event, pendaftaran, token, sertifikat, atau fitur lainnya!
+                        </div>
+                    </div>
+                    
+                    <!-- Input Area -->
+                    <div class="border-top p-3" style="background: #FFFFFF;">
+                        <form id="chat-form" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <input 
+                                type="text" 
+                                id="user-input" 
+                                class="form-control" 
+                                placeholder="Tulis pertanyaan Anda di sini..." 
+                                autocomplete="off"
+                                style="border-radius: 25px; padding: 0.75rem 1.5rem; border: 2px solid #E5E7EB;"
+                            >
+                            <button 
+                                type="submit" 
+                                class="btn text-white" 
+                                id="send-btn"
+                                style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%); border-radius: 25px; padding: 0.75rem 2rem; font-weight: 600; border: none;"
+                            >
+                                <i class="bi bi-send-fill me-2"></i>Kirim
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .message {
+        margin-bottom: 1rem;
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    .message-user {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .message-bot {
+        display: flex;
+        justify-content: flex-start;
+    }
+    
+    .message-content {
+        max-width: 70%;
+        padding: 1rem 1.5rem;
+        border-radius: 20px;
+        word-wrap: break-word;
+    }
+    
+    .message-user .message-content {
+        background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+        color: white;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .message-bot .message-content {
+        background: #FFFFFF;
+        color: #1F2937;
+        border: 1px solid #E5E7EB;
+        border-bottom-left-radius: 5px;
+    }
+    
+    .message-time {
+        font-size: 0.75rem;
+        color: #9CA3AF;
+        margin-top: 0.25rem;
+        text-align: right;
+    }
+    
+    .message-bot .message-time {
+        text-align: left;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(30, 58, 138, 0.3);
+        border-radius: 50%;
+        border-top-color: #1E3A8A;
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const sendBtn = document.getElementById('send-btn');
+    
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const message = userInput.value.trim();
+        if (!message) return;
+        
+        // Disable input and button
+        userInput.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<span class="loading"></span> Mengirim...';
+        
+        // Add user message
+        addMessage(message, 'user');
+        userInput.value = '';
+        
+        // Scroll to bottom
+        scrollToBottom();
+        
+        try {
+            // Get CSRF token
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // Send to API
+            const response = await fetch('{% url "events:chatbot_api" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                addMessage(data.response, 'bot');
+            } else {
+                addMessage('Maaf, terjadi kesalahan. Silakan coba lagi atau hubungi Event Organizer.', 'bot');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            addMessage('Maaf, terjadi kesalahan. Silakan coba lagi atau hubungi Event Organizer.', 'bot');
+        } finally {
+            // Re-enable input and button
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i>Kirim';
+            userInput.focus();
+            scrollToBottom();
+        }
+    });
+    
+    function addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message message-${sender}`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.textContent = text;
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        const now = new Date();
+        timeDiv.textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        
+        messageDiv.appendChild(contentDiv);
+        messageDiv.appendChild(timeDiv);
+        chatMessages.appendChild(messageDiv);
+    }
+    
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Focus input on load
+    userInput.focus();
+});
+</script>
+{% endblock %}
+

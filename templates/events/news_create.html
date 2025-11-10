@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tulis Berita - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-header" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%); color: #FFFFFF; border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 700;">
+                        <i class="bi bi-pencil-square me-2"></i> Tulis Berita Baru
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                    <i class="bi bi-bookmark me-1"></i> Judul Berita *
+                                </label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                    <i class="bi bi-tags me-1"></i> Kategori *
+                                </label>
+                                <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" class="form-control" required style="background-color: #FFFFFF !important; color: #1F2937 !important; border: 1px solid #E5E7EB; border-radius: 8px; padding: 0.75rem;">
+                                    <option value="seminar" style="background: #FFFFFF; color: #1F2937;">Seminar & Conference</option>
+                                    <option value="concert" style="background: #FFFFFF; color: #1F2937;">Concert & Festival</option>
+                                </select>
+                                {% if form.category.errors %}
+                                    <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.event.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                <i class="bi bi-calendar-event me-1"></i> Event Terkait (Opsional)
+                            </label>
+                            {{ form.event }}
+                            {% if form.event.errors %}
+                                <div class="text-danger small mt-1">{{ form.event.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">Pilih event yang terkait dengan berita ini (opsional)</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.content.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                <i class="bi bi-file-text me-1"></i> Konten Berita *
+                            </label>
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                                <div class="text-danger small mt-1">{{ form.content.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.seminar_materials.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                    <i class="bi bi-book me-1"></i> Materi Seminar
+                                </label>
+                                {{ form.seminar_materials }}
+                                {% if form.seminar_materials.errors %}
+                                    <div class="text-danger small mt-1">{{ form.seminar_materials.errors }}</div>
+                                {% endif %}
+                                <small class="text-muted">Daftar materi yang akan dibahas (untuk kategori Seminar)</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.concert_lineup.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                    <i class="bi bi-music-note-beamed me-1"></i> Lineup Konser
+                                </label>
+                                {{ form.concert_lineup }}
+                                {% if form.concert_lineup.errors %}
+                                    <div class="text-danger small mt-1">{{ form.concert_lineup.errors }}</div>
+                                {% endif %}
+                                <small class="text-muted">Daftar grup musik atau artis (untuk kategori Konser)</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.payment_info.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                    <i class="bi bi-credit-card me-1"></i> Informasi Pembayaran
+                                </label>
+                                {{ form.payment_info }}
+                                {% if form.payment_info.errors %}
+                                    <div class="text-danger small mt-1">{{ form.payment_info.errors }}</div>
+                                {% endif %}
+                                <small class="text-muted">Informasi tentang pembayaran event (jika berbayar)</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.payment_deadline.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                    <i class="bi bi-calendar-x me-1"></i> Batas Waktu Pembayaran
+                                </label>
+                                {{ form.payment_deadline }}
+                                {% if form.payment_deadline.errors %}
+                                    <div class="text-danger small mt-1">{{ form.payment_deadline.errors }}</div>
+                                {% endif %}
+                                <small class="text-muted">Kapan user harus menyiapkan uang</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.featured_image.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937;">
+                                <i class="bi bi-image me-1"></i> Gambar Utama
+                            </label>
+                            {{ form.featured_image }}
+                            {% if form.featured_image.errors %}
+                                <div class="text-danger small mt-1">{{ form.featured_image.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">Max 5MB, format JPG/PNG</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.is_published }}
+                                <label class="form-check-label" for="{{ form.is_published.id_for_label }}" style="font-weight: 600; color: #1F2937;">
+                                    Publikasikan berita ini
+                                </label>
+                            </div>
+                            {% if form.is_published.errors %}
+                                <div class="text-danger small mt-1">{{ form.is_published.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="{% url 'events:news_list' %}" class="btn" style="background-color: #E5E7EB; color: #1F2937; font-weight: 600; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                                <i class="bi bi-x-circle me-2"></i> Batal
+                            </a>
+                            <button type="submit" class="btn" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem 1.5rem; border: none;">
+                                <i class="bi bi-check-circle me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Simpan Berita</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

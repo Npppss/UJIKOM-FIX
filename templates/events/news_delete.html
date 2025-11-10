@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hapus Berita - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-header bg-danger text-white" style="border-radius: 12px 12px 0 0; padding: 1.5rem;">
+                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 700;">
+                        <i class="bi bi-exclamation-triangle me-2"></i> Hapus Berita
+                    </h2>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-warning mb-4">
+                        <strong>Peringatan!</strong> Tindakan ini tidak dapat dibatalkan.
+                    </div>
+                    
+                    <p class="mb-3">Apakah Anda yakin ingin menghapus berita berikut?</p>
+                    <div class="card mb-4" style="background-color: #F9FAFB;">
+                        <div class="card-body">
+                            <h5 class="mb-2">{{ news.title }}</h5>
+                            <p class="text-muted mb-0">
+                                <small>Oleh: {{ news.author.name }} | {{ news.created_at|date:"d M Y" }}</small>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a href="{% url 'events:news_detail' news.id %}" class="btn" style="background-color: #E5E7EB; color: #1F2937; font-weight: 600; border-radius: 8px; padding: 0.75rem 1.5rem; text-decoration: none;">
+                                <i class="bi bi-x-circle me-2"></i> Batal
+                            </a>
+                            <button type="submit" class="btn" style="background-color: #DC3545 !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem 1.5rem; border: none;">
+                                <i class="bi bi-trash me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Hapus Berita</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

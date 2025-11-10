@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - Dynamic Experience{% endblock %}
+
+{% block extra_css %}
+<!-- TailwindCSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+    
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'blue-dark': '#1E3A8A',
+                    'purple-bright': '#7C3AED',
+                },
+                fontFamily: {
+                    'poppins': ['Poppins', 'sans-serif'],
+                    'inter': ['Inter', 'sans-serif'],
+                },
+            }
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <!-- Header -->
+    <div class="mb-5 pb-3 border-bottom" style="border-color: #E5E7EB !important;">
+        <h1 class="mb-0" style="font-size: 2rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+            <i class="bi bi-person-circle me-2" style="color: #1E3A8A;"></i> Profile Saya
+        </h1>
+        <p class="text-muted mt-2 mb-0">Kelola informasi pribadi Anda</p>
+    </div>
+
+    <div class="row">
+        <!-- Profile Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="mb-4" style="font-weight: 600; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                        <i class="bi bi-pencil-square me-2" style="color: #1E3A8A;"></i> Update Data Diri
+                    </h5>
+
+                    <form method="POST" action="{% url 'accounts:profile' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.name.id_for_label }}" class="form-label" style="font-weight: 500; color: #1F2937;">
+                                <i class="bi bi-person me-1"></i> {{ form.name.label }}
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.email.id_for_label }}" class="form-label" style="font-weight: 500; color: #1F2937;">
+                                <i class="bi bi-envelope me-1"></i> Email
+                            </label>
+                            <input type="email" class="form-control" value="{{ user.email }}" disabled style="background-color: #F9FAFB; color: #6B7280;">
+                            <small class="text-muted">Email tidak dapat diubah</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label" style="font-weight: 500; color: #1F2937;">
+                                <i class="bi bi-telephone me-1"></i> {{ form.phone.label }}
+                            </label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger small mt-1">{{ form.phone.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">Format: 081234567890</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.address.id_for_label }}" class="form-label" style="font-weight: 500; color: #1F2937;">
+                                <i class="bi bi-geo-alt me-1"></i> {{ form.address.label }}
+                            </label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger small mt-1">{{ form.address.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.education.id_for_label }}" class="form-label" style="font-weight: 500; color: #1F2937;">
+                                <i class="bi bi-mortarboard me-1"></i> {{ form.education.label }}
+                            </label>
+                            {{ form.education }}
+                            {% if form.education.errors %}
+                                <div class="text-danger small mt-1">{{ form.education.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted">Contoh: SMA, S1, S2, S3</small>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn px-5 py-2" style="background-color: #1E3A8A; color: #FFFFFF; border-radius: 8px; font-weight: 500; border: none;">
+                                <i class="bi bi-check-circle me-2"></i> Simpan Perubahan
+                            </button>
+                            <a href="{% url 'dashboard:user' %}" class="btn px-5 py-2" style="background-color: #E5E7EB; color: #1F2937; border-radius: 8px; font-weight: 500; border: none;">
+                                <i class="bi bi-x-circle me-2"></i> Batal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Info Card -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="mb-4" style="font-weight: 600; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                        <i class="bi bi-info-circle me-2" style="color: #1E3A8A;"></i> Informasi Akun
+                    </h5>
+                    
+                    <div class="text-center mb-4">
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important;">
+                            <i class="bi bi-person-circle text-white" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6 class="mb-1" style="font-weight: 600; color: #1F2937; font-family: 'Poppins', sans-serif;">{{ user.name }}</h6>
+                        <p class="text-muted small mb-0">{{ user.email }}</p>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Role</small>
+                        <span class="badge px-3 py-1" style="background-color: #DBEAFE; color: #1E40AF; font-weight: 500; border-radius: 6px;">
+                            {% if user.role == 'user' %}
+                                <i class="bi bi-person me-1"></i> User
+                            {% elif user.role == 'admin' %}
+                                <i class="bi bi-shield-check me-1"></i> Admin
+                            {% elif user.role == 'event_organizer' %}
+                                <i class="bi bi-calendar-event me-1"></i> Event Organizer
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Status Email</small>
+                        {% if user.is_verified %}
+                            <span class="badge px-3 py-1" style="background-color: #D1FAE5; color: #065F46; font-weight: 500; border-radius: 6px;">
+                                <i class="bi bi-check-circle me-1"></i> Terverifikasi
+                            </span>
+                        {% else %}
+                            <span class="badge px-3 py-1" style="background-color: #FEE2E2; color: #991B1B; font-weight: 500; border-radius: 6px;">
+                                <i class="bi bi-x-circle me-1"></i> Belum Terverifikasi
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Bergabung Sejak</small>
+                        <p class="mb-0" style="color: #1F2937; font-weight: 500;">{{ user.created_at|date:"d M Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Achievements Section -->
+            {% if user.achievements.all %}
+                <div class="card border-0 shadow-sm mt-4" style="border-radius: 12px;">
+                    <div class="card-body p-4">
+                        <h5 class="mb-4" style="font-weight: 600; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                            <i class="bi bi-trophy me-2" style="color: #FFD700;"></i> Achievements
+                        </h5>
+                        <div class="row g-3">
+                            {% for achievement in user.achievements.all %}
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center p-3 rounded" style="background-color: #F9FAFB; border-left: 4px solid #FFD700;">
+                                        <div class="me-3">
+                                            <i class="bi {{ achievement.icon }}" style="font-size: 2rem; color: #FFD700;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1" style="font-weight: 600; color: #1F2937;">{{ achievement.title }}</h6>
+                                            <p class="mb-0 small text-muted">{{ achievement.description }}</p>
+                                            <small class="text-muted">{{ achievement.earned_at|date:"d M Y" }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #1E3A8A;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        outline: none;
+    }
+    
+    .form-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
+

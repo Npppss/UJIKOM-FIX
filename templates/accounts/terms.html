@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Syarat & Ketentuan - Dynamic Experience{% endblock %}
+
+{% block extra_css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-5">
+                    <!-- Header -->
+                    <div class="text-center mb-5">
+                        <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                            <i class="bi bi-file-text me-2" style="color: #1E3A8A;"></i> Syarat & Ketentuan
+                        </h1>
+                        <p class="text-muted mb-0">Terakhir diperbarui: {{ "now"|date:"d F Y" }}</p>
+                    </div>
+                    
+                    <hr class="my-4" style="border-color: #E5E7EB;">
+                    
+                    <!-- Content -->
+                    <div style="color: #1F2937; line-height: 1.8; font-family: 'Inter', sans-serif;">
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                1. Penerimaan Syarat
+                            </h2>
+                            <p class="mb-3">
+                                Dengan mengakses dan menggunakan platform <strong>Dynamic Experience</strong>, Anda menyetujui untuk terikat oleh syarat dan ketentuan ini. Jika Anda tidak setuju dengan bagian mana pun dari syarat ini, Anda tidak boleh menggunakan layanan kami.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                2. Penggunaan Platform
+                            </h2>
+                            <p class="mb-3">Platform ini menyediakan layanan untuk:</p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Pendaftaran dan partisipasi dalam event seminar dan konser</li>
+                                <li>Manajemen registrasi event</li>
+                                <li>Penerbitan sertifikat partisipasi</li>
+                                <li>Informasi dan komunikasi terkait event</li>
+                            </ul>
+                            <p class="mb-3">
+                                Anda setuju untuk menggunakan platform ini hanya untuk tujuan yang sah dan sesuai dengan semua hukum dan peraturan yang berlaku.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                3. Registrasi Akun
+                            </h2>
+                            <p class="mb-3">Untuk menggunakan layanan tertentu, Anda harus:</p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Menyediakan informasi yang akurat, lengkap, dan terkini</li>
+                                <li>Memelihara dan memperbarui informasi akun Anda</li>
+                                <li>Menjaga kerahasiaan kata sandi Anda</li>
+                                <li>Bertanggung jawab atas semua aktivitas yang terjadi di bawah akun Anda</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                4. Pendaftaran Event
+                            </h2>
+                            <p class="mb-3">
+                                Dengan mendaftar untuk suatu event, Anda menyetujui untuk:
+                            </p>
+                            <ul class="mb-3" style="padding-left: 1.5rem;">
+                                <li>Hadir pada waktu dan tempat yang ditentukan</li>
+                                <li>Mematuhi aturan dan regulasi event</li>
+                                <li>Membayar biaya pendaftaran (jika berlaku) sesuai dengan ketentuan yang ditetapkan</li>
+                                <li>Memberikan informasi yang akurat saat pendaftaran</li>
+                            </ul>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                5. Pembatalan dan Pengembalian
+                            </h2>
+                            <p class="mb-3">
+                                Kebijakan pembatalan dan pengembalian dana (jika berlaku) akan diatur oleh penyelenggara event masing-masing. Silakan hubungi penyelenggara event untuk informasi lebih lanjut mengenai kebijakan pembatalan.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                6. Hak Kekayaan Intelektual
+                            </h2>
+                            <p class="mb-3">
+                                Semua konten di platform ini, termasuk namun tidak terbatas pada teks, grafik, logo, gambar, dan perangkat lunak, adalah milik Dynamic Experience atau pemberi lisensinya dan dilindungi oleh undang-undang hak cipta.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                7. Batasan Tanggung Jawab
+                            </h2>
+                            <p class="mb-3">
+                                Dynamic Experience tidak bertanggung jawab atas kerugian langsung, tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan atau ketidakmampuan untuk menggunakan platform ini.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                8. Perubahan Syarat
+                            </h2>
+                            <p class="mb-3">
+                                Kami berhak untuk memodifikasi syarat dan ketentuan ini kapan saja. Perubahan akan berlaku efektif setelah dipublikasikan di platform. Penggunaan berkelanjutan platform setelah perubahan berarti Anda menerima syarat yang baru.
+                            </p>
+                        </section>
+                        
+                        <section class="mb-5">
+                            <h2 class="mb-3" style="font-size: 1.75rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                9. Kontak
+                            </h2>
+                            <p class="mb-3">
+                                Jika Anda memiliki pertanyaan tentang syarat dan ketentuan ini, silakan hubungi kami di:
+                            </p>
+                            <p class="mb-0">
+                                <strong>Email:</strong> info@dynamicexperience.com<br>
+                                <strong>Telepon:</strong> +62 123 456 7890<br>
+                                <strong>Alamat:</strong> Jakarta, Indonesia
+                            </p>
+                        </section>
+                    </div>
+                    
+                    <hr class="my-4" style="border-color: #E5E7EB;">
+                    
+                    <!-- Footer Actions -->
+                    <div class="text-center">
+                        <a href="{% url 'accounts:register' %}" class="btn px-5 py-2" style="background-color: #1E3A8A; color: #FFFFFF; border-radius: 8px; font-weight: 500; border: none; text-decoration: none;">
+                            <i class="bi bi-arrow-left me-2"></i> Kembali ke Pendaftaran
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

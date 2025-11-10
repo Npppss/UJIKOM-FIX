@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ - Dynamic Experience{% endblock %}
+
+{% block extra_css %}
+<style>
+    .faq-container {
+        padding: 3rem 0;
+    }
+    
+    .faq-title {
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+    }
+    
+    .faq-subtitle {
+        color: #4B5563;
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-bottom: 3rem;
+    }
+    
+    .faq-accordion-item {
+        background: #FFFFFF;
+        border: 1px solid #E5E7EB;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .faq-accordion-button {
+        width: 100%;
+        padding: 1.25rem 1.5rem;
+        background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+        color: #FFFFFF;
+        font-weight: 600;
+        font-size: 1.1rem;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .faq-accordion-button:hover {
+        background: linear-gradient(135deg, #1E40AF 0%, #8B5CF6 100%);
+    }
+    
+    .faq-accordion-button .faq-icon {
+        margin-right: 0.75rem;
+        font-size: 1.2rem;
+    }
+    
+    .faq-accordion-button .faq-chevron {
+        transition: transform 0.3s ease;
+        font-size: 0.875rem;
+    }
+    
+    .faq-accordion-button[aria-expanded="true"] .faq-chevron {
+        transform: rotate(180deg);
+    }
+    
+    .faq-accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: #F9FAFB;
+    }
+    
+    .faq-accordion-content.show {
+        max-height: 1000px;
+    }
+    
+    .faq-accordion-body {
+        padding: 1rem 1.25rem;
+        color: #1F2937;
+        line-height: 1.8;
+    }
+    
+    @media (min-width: 640px) {
+        .faq-accordion-body {
+            padding: 1.5rem;
+        }
+    }
+    
+    .faq-accordion-body p {
+        color: #1F2937;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+    
+    .faq-accordion-body ol,
+    .faq-accordion-body ul {
+        color: #1F2937;
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+    
+    .faq-accordion-body li {
+        color: #1F2937;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+    
+    .faq-accordion-body strong {
+        color: #1E3A8A;
+        font-weight: 700;
+    }
+    
+    .faq-cta {
+        margin-top: 3rem;
+        padding: 3rem;
+        background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .faq-cta h3 {
+        color: #FFFFFF;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .faq-cta p {
+        color: #FFFFFF;
+        opacity: 0.9;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .faq-cta .btn {
+        border-radius: 25px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container faq-container px-3 sm:px-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-4 sm:mb-5">
+                <h1 class="faq-title" style="font-size: 2rem;">
+                    <i class="bi bi-question-circle-fill"></i> FAQ
+                </h1>
+                <p class="faq-subtitle" style="font-size: 1rem;">
+                    Pertanyaan yang Sering Diajukan
+                </p>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div class="faq-accordion">
+                <!-- FAQ 1 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="true" onclick="toggleFaq(1)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Apa itu Dynamic Experience?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content show" id="faq-content-1">
+                        <div class="faq-accordion-body">
+                            <p>
+                                Dynamic Experience adalah platform pendaftaran kegiatan yang menyediakan berbagai event seperti Seminar, Konser, dan Berita. 
+                                Platform ini memungkinkan Anda untuk mendaftar ke berbagai kegiatan, mengisi daftar hadir, dan mendapatkan sertifikat.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(2)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Bagaimana cara mendaftar ke sebuah event?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-2">
+                        <div class="faq-accordion-body">
+                            <p>Untuk mendaftar ke sebuah event:</p>
+                            <ol>
+                                <li>Login ke akun Anda (atau daftar jika belum punya akun)</li>
+                                <li>Buka halaman detail event yang ingin Anda ikuti</li>
+                                <li>Klik tombol "Daftar Sekarang"</li>
+                                <li>Untuk event berbayar, upload bukti pembayaran</li>
+                                <li>Token pendaftaran akan dikirim ke email Anda</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(3)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Apa itu token dan bagaimana cara menggunakannya?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-3">
+                        <div class="faq-accordion-body">
+                            <p>
+                                Token adalah kode 10 digit yang dikirim ke email Anda setelah mendaftar ke sebuah event. 
+                                Token digunakan untuk mengisi daftar hadir pada hari H kegiatan.
+                            </p>
+                            <p><strong>Cara menggunakan token:</strong></p>
+                            <ol>
+                                <li>Buka halaman "Riwayat" di menu dropdown profil</li>
+                                <li>Cari event yang sudah Anda daftar</li>
+                                <li>Klik tombol "Hadir" setelah event dimulai</li>
+                                <li>Masukkan token 10 digit yang ada di email</li>
+                                <li>Klik "Konfirmasi Kehadiran"</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(4)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Bagaimana cara mendapatkan sertifikat?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-4">
+                        <div class="faq-accordion-body">
+                            <p>
+                                Sertifikat akan otomatis dibuat setelah Anda mengisi daftar hadir dengan token yang valid. 
+                                Sertifikat hanya dibuat jika event memiliki template sertifikat.
+                            </p>
+                            <p><strong>Cara melihat dan mengunduh sertifikat:</strong></p>
+                            <ol>
+                                <li>Buka menu dropdown profil</li>
+                                <li>Pilih "Sertifikat"</li>
+                                <li>Klik "Download Sertifikat" pada event yang diinginkan</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(5)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Bagaimana jika event berbayar?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-5">
+                        <div class="faq-accordion-body">
+                            <p>Untuk event berbayar:</p>
+                            <ol>
+                                <li>Transfer pembayaran ke nomor rekening yang tertera di detail event atau berita</li>
+                                <li>Upload bukti pembayaran saat mendaftar atau setelah terdaftar</li>
+                                <li>Tunggu validasi dari Event Organizer</li>
+                                <li>Setelah pembayaran disetujui, Anda dapat mengisi daftar hadir</li>
+                                <li>Jika pembayaran ditolak, upload bukti pembayaran baru</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 6 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(6)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Bagaimana jika token hilang?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-6">
+                        <div class="faq-accordion-body">
+                            <p>Jika token Anda hilang:</p>
+                            <ol>
+                                <li>Cek email Anda (termasuk folder spam) untuk mencari email token</li>
+                                <li>Jika tidak ditemukan, hubungi Event Organizer event tersebut</li>
+                                <li>Informasi kontak Event Organizer dapat dilihat di halaman detail event</li>
+                                <li>Event Organizer dapat membantu memberikan token baru jika diperlukan</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 7 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(7)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Kapan saya bisa mengisi daftar hadir?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-7">
+                        <div class="faq-accordion-body">
+                            <p>Daftar hadir dapat diisi setelah:</p>
+                            <ul>
+                                <li>Event sudah dimulai (setelah jam kegiatan dimulai)</li>
+                                <li>Untuk event berbayar: pembayaran sudah disetujui oleh Event Organizer</li>
+                                <li>Anda sudah terdaftar ke event tersebut</li>
+                            </ul>
+                            <p><strong>Catatan:</strong> Anda bisa mengisi daftar hadir meskipun telat, selama event belum selesai atau dibatalkan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 8 -->
+                <div class="faq-accordion-item">
+                    <button class="faq-accordion-button" type="button" aria-expanded="false" onclick="toggleFaq(8)">
+                        <span>
+                            <i class="bi bi-question-circle faq-icon"></i>
+                            Bagaimana cara menghubungi Event Organizer?
+                        </span>
+                        <i class="bi bi-chevron-down faq-chevron"></i>
+                    </button>
+                    <div class="faq-accordion-content" id="faq-content-8">
+                        <div class="faq-accordion-body">
+                            <p>Informasi kontak Event Organizer dapat ditemukan di:</p>
+                            <ul>
+                                <li>Halaman detail event (bagian "Event Organizer")</li>
+                                <li>Halaman isi daftar hadir (jika token hilang)</li>
+                                <li>Halaman riwayat (link email Event Organizer)</li>
+                            </ul>
+                            <p>
+                                Anda dapat menghubungi Event Organizer melalui email atau telepon yang tertera untuk pertanyaan tentang event, token, atau masalah lainnya.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="faq-cta">
+                <h3>
+                    <i class="bi bi-lightning-charge-fill me-2"></i> Masih Ada Pertanyaan?
+                </h3>
+                <p>
+                    Login untuk mengakses chatbot "Tanya Dexy" yang siap membantu Anda 24/7!
+                </p>
+                <a href="{% url 'accounts:login' %}" class="btn btn-light btn-lg">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Login Sekarang
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleFaq(num) {
+    const button = event.target.closest('.faq-accordion-button');
+    const content = document.getElementById('faq-content-' + num);
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    
+    // Close all other FAQs
+    document.querySelectorAll('.faq-accordion-button').forEach(btn => {
+        if (btn !== button) {
+            btn.setAttribute('aria-expanded', 'false');
+            const otherNum = btn.getAttribute('onclick').match(/\d+/)[0];
+            const otherContent = document.getElementById('faq-content-' + otherNum);
+            if (otherContent) {
+                otherContent.classList.remove('show');
+            }
+        }
+    });
+    
+    // Toggle current FAQ
+    if (isExpanded) {
+        button.setAttribute('aria-expanded', 'false');
+        content.classList.remove('show');
+    } else {
+        button.setAttribute('aria-expanded', 'true');
+        content.classList.add('show');
+    }
+}
+</script>
+{% endblock %}

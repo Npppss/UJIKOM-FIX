@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - EVENT VIBE{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-5 mb-3 sm:mb-5 px-3 sm:px-4">
+    <!-- Header Bar: Dashboard Title -->
+    <div class="mb-3 sm:mb-5 pb-2 sm:pb-3 border-bottom" style="border-color: #E5E7EB !important;">
+        <h1 class="mb-0" style="font-size: 1.5rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+            Dashboard
+        </h1>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4 sm:mb-5 g-3 sm:g-4">
+        <div class="col-12 col-sm-6 col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1" style="font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Total Terdaftar
+                            </p>
+                            <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                {{ total_registered }}
+                            </h2>
+                        </div>
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important;">
+                            <i class="bi bi-calendar-check text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1" style="font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Total Hadir
+                            </p>
+                            <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                {{ total_attended }}
+                            </h2>
+                        </div>
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;">
+                            <i class="bi bi-check-circle text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <p class="text-muted mb-1" style="font-size: 0.875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px;">
+                                Total Sertifikat
+                            </p>
+                            <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 700; color: #1E3A8A; font-family: 'Poppins', sans-serif;">
+                                {{ total_certificates }}
+                            </h2>
+                        </div>
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%) !important;">
+                            <i class="bi bi-award text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Events -->
+    {% if upcoming_registrations %}
+        <div class="card border-0 shadow-sm fade-in-up" style="animation-delay: 0.4s; border-radius: 12px;">
+            <div class="card-body p-4">
+                <h3 class="mb-4" style="font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif; font-size: 1.5rem;">
+                    <i class="bi bi-calendar-event me-2" style="color: #1E3A8A;"></i> Kegiatan Mendatang
+                </h3>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: #F9FAFB;">
+                            <tr>
+                                <th style="font-weight: 600; color: #1F2937; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Kegiatan</th>
+                                <th style="font-weight: 600; color: #1F2937; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Tanggal</th>
+                                <th style="font-weight: 600; color: #1F2937; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Waktu</th>
+                                <th style="font-weight: 600; color: #1F2937; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Lokasi</th>
+                                <th style="font-weight: 600; color: #1F2937; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Status</th>
+                                <th style="font-weight: 600; color: #1F2937; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 1rem;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registration in upcoming_registrations %}
+                                <tr style="border-bottom: 1px solid #E5E7EB;">
+                                    <td style="padding: 1rem; color: #1F2937; font-weight: 600;">{{ registration.event.title }}</td>
+                                    <td style="padding: 1rem; color: #4B5563;">{{ registration.event.event_date|date:"d M Y" }}</td>
+                                    <td style="padding: 1rem; color: #4B5563;">{{ registration.event.event_time|time:"H:i" }}</td>
+                                    <td style="padding: 1rem; color: #4B5563;">{{ registration.event.location|truncatewords:3 }}</td>
+                                    <td style="padding: 1rem;">
+                                        {% if registration.status == 'registered' %}
+                                            <span class="badge px-3 py-1" style="background-color: #DBEAFE; color: #1E40AF; font-weight: 500; border-radius: 6px;">Terdaftar</span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        <a href="{% url 'events:detail' registration.event.id %}" class="btn btn-sm px-3" style="background-color: #1E3A8A; color: #FFFFFF; border-radius: 6px; font-weight: 500; border: none;">
+                                            <i class="bi bi-eye me-1"></i> Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm text-center py-5 fade-in-up" style="animation-delay: 0.4s; border-radius: 12px;">
+            <div class="card-body">
+                <i class="bi bi-calendar-x mb-3" style="font-size: 3rem; color: #9CA3AF;"></i>
+                <p class="text-muted mb-0">Tidak ada kegiatan mendatang. Yuk cari event lainnya!</p>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Quick Actions -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm fade-in-up" style="animation-delay: 0.5s; border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h4 class="mb-4" style="font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif; font-size: 1.25rem;">
+                        <i class="bi bi-lightning-charge-fill me-2" style="color: #1E3A8A;"></i> Quick Actions
+                    </h4>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'events:catalog' %}" class="btn px-4 py-2" style="background-color: #1E3A8A; color: #FFFFFF; border-radius: 8px; font-weight: 500; border: none;">
+                            <i class="bi bi-search me-2"></i> Cari Kegiatan
+                        </a>
+                        <a href="{% url 'registrations:history' %}" class="btn px-4 py-2" style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: #FFFFFF; border-radius: 8px; font-weight: 500; border: none;">
+                            <i class="bi bi-clock-history me-2"></i> Riwayat Kegiatan
+                        </a>
+                        <a href="{% url 'certificates:list' %}" class="btn px-4 py-2" style="background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%); color: #FFFFFF; border-radius: 8px; font-weight: 500; border: none;">
+                            <i class="bi bi-award me-2"></i> Sertifikat Saya
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

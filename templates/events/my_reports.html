@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Riwayat Report Event - Dynamic Experience{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <!-- Header Section -->
+    <div class="mb-4">
+        <h1 class="mb-3" style="font-size: 2rem; font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+            Riwayat Report Event
+        </h1>
+        <p class="text-muted">Lihat semua laporan event yang telah Anda buat</p>
+    </div>
+    
+    <!-- Status Filter -->
+    <div class="mb-4">
+        <div class="btn-group" role="group">
+            <a href="{% url 'events:my_reports' %}" 
+               class="btn {% if not status_filter %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+               style="{% if not status_filter %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 8px 0 0 8px;">
+                Semua
+            </a>
+            <a href="{% url 'events:my_reports' %}?status=pending" 
+               class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+               style="{% if status_filter == 'pending' %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 0;">
+                Menunggu Review
+            </a>
+            <a href="{% url 'events:my_reports' %}?status=approved" 
+               class="btn {% if status_filter == 'approved' %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+               style="{% if status_filter == 'approved' %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 0;">
+                Disetujui
+            </a>
+            <a href="{% url 'events:my_reports' %}?status=rejected" 
+               class="btn {% if status_filter == 'rejected' %}btn-primary{% else %}btn-outline-primary{% endif %}" 
+               style="{% if status_filter == 'rejected' %}background-color: #1E3A8A; color: #FFFFFF;{% else %}border-color: #1E3A8A; color: #1E3A8A;{% endif %} border-radius: 0 8px 8px 0;">
+                Ditolak
+            </a>
+        </div>
+    </div>
+    
+    <!-- Reports List -->
+    {% if reports %}
+        <div class="row g-4">
+            {% for report in reports %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="flex-grow-1">
+                                    <!-- Event Title -->
+                                    <h5 class="mb-2" style="font-weight: 700; color: #1F2937; font-family: 'Poppins', sans-serif;">
+                                        <a href="{% url 'events:detail' report.event.id %}" style="color: #1F2937; text-decoration: none;">
+                                            {{ report.event.title }}
+                                        </a>
+                                    </h5>
+                                    
+                                    <!-- Report Reason -->
+                                    <div class="mb-2">
+                                        <span class="badge px-3 py-1" style="background-color: #DBEAFE; color: #1E40AF; font-weight: 500; border-radius: 6px;">
+                                            {{ report.get_reason_display }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Report Description -->
+                                    <p class="mb-3 text-muted" style="line-height: 1.6;">
+                                        {{ report.description|truncatewords:30 }}
+                                    </p>
+                                    
+                                    <!-- Report Date -->
+                                    <div class="mb-2">
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar me-1"></i> Dilaporkan pada {{ report.created_at|date:"d M Y H:i" }}
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Status Badge -->
+                                    <div class="mb-3">
+                                        {% if report.status == 'pending' %}
+                                            <span class="badge px-3 py-2" style="background-color: #FEF3C7; color: #92400E; font-weight: 600; border-radius: 6px;">
+                                                <i class="bi bi-clock-history me-1"></i> Menunggu Review
+                                            </span>
+                                        {% elif report.status == 'approved' %}
+                                            <span class="badge px-3 py-2" style="background-color: #D1FAE5; color: #065F46; font-weight: 600; border-radius: 6px;">
+                                                <i class="bi bi-check-circle me-1"></i> Disetujui
+                                            </span>
+                                        {% elif report.status == 'rejected' %}
+                                            <span class="badge px-3 py-2" style="background-color: #FEE2E2; color: #991B1B; font-weight: 600; border-radius: 6px;">
+                                                <i class="bi bi-x-circle me-1"></i> Ditolak
+                                            </span>
+                                        {% endif %}
+                                        
+                                        {% if report.reviewed_at %}
+                                            <small class="text-muted ms-2">
+                                                <i class="bi bi-calendar-check me-1"></i> Direview pada {{ report.reviewed_at|date:"d M Y H:i" }}
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Admin Feedback -->
+                                    {% if report.admin_feedback %}
+                                        <div class="alert {% if report.status == 'approved' %}alert-success{% elif report.status == 'rejected' %}alert-danger{% else %}alert-info{% endif %} mb-0" 
+                                             style="background-color: {% if report.status == 'approved' %}#D1FAE5{% elif report.status == 'rejected' %}#FEE2E2{% else %}#DBEAFE{% endif %}; border: 1px solid {% if report.status == 'approved' %}#10B981{% elif report.status == 'rejected' %}#EF4444{% else %}#3B82F6{% endif %}; border-radius: 8px; color: {% if report.status == 'approved' %}#065F46{% elif report.status == 'rejected' %}#991B1B{% else %}#1E40AF{% endif %};">
+                                            <strong>Feedback Admin:</strong> {{ report.admin_feedback }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 mt-3">
+                                <a href="{% url 'events:detail' report.event.id %}" 
+                                   class="btn btn-sm" 
+                                   style="background-color: #3B82F6; color: #FFFFFF; border-radius: 6px; font-weight: 600; border: none; text-decoration: none;">
+                                    <i class="bi bi-eye me-1"></i> Lihat Event
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if reports.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if reports.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ reports.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in reports.paginator.page_range %}
+                        {% if reports.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link" style="background-color: #1E3A8A; border-color: #1E3A8A;">{{ num }}</span>
+                            </li>
+                        {% elif num > reports.number|add:'-3' and num < reports.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if reports.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ reports.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ reports.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}" style="color: #1E3A8A; border-color: #1E3A8A;">
+                                <i class="bi bi-chevron-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 4rem; color: #9CA3AF;"></i>
+            <h3 class="mt-3 mb-2" style="color: #1F2937; font-weight: 600;">
+                {% if status_filter %}
+                    Tidak ada laporan dengan status "{{ status_filter }}"
+                {% else %}
+                    Belum ada laporan event
+                {% endif %}
+            </h3>
+            <p class="text-muted">Mulai laporkan event yang tidak sesuai untuk membantu menjaga kualitas komunitas.</p>
+            <a href="{% url 'events:catalog' %}" class="btn mt-3" style="background-color: #1E3A8A; color: #FFFFFF; font-weight: 600; border-radius: 8px;">
+                Jelajahi Event
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
