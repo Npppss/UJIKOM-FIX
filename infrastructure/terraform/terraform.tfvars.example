@@ -1,0 +1,31 @@
+# AWS Configuration
+aws_region = "ap-southeast-1"  # Singapore region
+environment = "production"      # dev, staging, production
+project_name = "epicvibe"
+
+# VPC Configuration
+vpc_cidr = "10.0.0.0/16"
+
+# Database Configuration
+db_name = "epicvibe_db"
+db_username = "epicvibe_admin"
+db_password = "CHANGE_THIS_SECURE_PASSWORD"  # Use strong password
+
+# Domain Configuration
+domain_name = "epicvibe.com"  # Your domain name
+
+# GitHub Configuration
+github_repository_url = "https://github.com/Npppss/UJIKOM-FIX"
+github_branch = "main"
+github_access_token = "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"  # Generate from GitHub Settings > Developer settings > Personal access tokens
+
+# Django Secrets (Generate secure random strings)
+django_secret_key = "CHANGE_THIS_DJANGO_SECRET_KEY"  # Generate: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
+openai_api_key = "YOUR_OPENAI_API_KEY"  # From https://platform.openai.com/api-keys
+email_password = "YOUR_GMAIL_APP_PASSWORD"  # Gmail App Password from Google Account settings
+
+# Instructions:
+# 1. Copy this file: cp terraform.tfvars.example terraform.tfvars
+# 2. Edit terraform.tfvars with your actual values
+# 3. Never commit terraform.tfvars to Git (it's in .gitignore)
+
