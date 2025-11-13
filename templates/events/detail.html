@@ -169,6 +169,26 @@
                             <i class="bi bi-check-circle-fill"></i> <strong>Anda sudah terdaftar!</strong>
                         </div>
                         
+                        <!-- Akses Materi Seminar -->
+                        {% if can_access_material %}
+                            <div class="alert mb-3" style="background: linear-gradient(135deg, #DBEAFE 0%, #E0E7FF 100%); border: 2px solid #3B82F6; border-radius: 15px; padding: 1.25rem;">
+                                <h6 class="mb-3" style="font-weight: 700; color: #1F2937;">
+                                    <i class="bi bi-book-fill" style="color: #1E3A8A;"></i> Materi Seminar Tersedia
+                                </h6>
+                                <p class="mb-3" style="color: #1F2937; font-size: 0.95rem;">
+                                    Materi seminar sudah tersedia untuk diunduh. Klik tombol di bawah untuk mengakses materi.
+                                </p>
+                                <a href="{% url 'events:download_material' event.id %}" class="btn w-100" style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px; padding: 0.75rem;">
+                                    <i class="bi bi-download me-2"></i> 📚 Akses Materi
+                                </a>
+                            </div>
+                        {% elif event.category == 'seminar' and event.status == 'completed' and event.material_file and not is_registered %}
+                            <div class="alert mb-3" style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 10px; color: #92400E;">
+                                <i class="bi bi-info-circle"></i> <strong>Materi Tersedia</strong>
+                                <p class="mb-0 mt-2 small">Daftar terlebih dahulu untuk mengakses materi seminar.</p>
+                            </div>
+                        {% endif %}
+                        
                         <!-- Payment Status & Upload Form -->
                         {% if event.price and event.price > 0 %}
                             {% if registration.payment_status == 'approved' %}
@@ -182,39 +202,6 @@
                                         <p class="mb-0 small"><strong>Tanggal validasi:</strong> {{ registration.payment_validated_at|date:"d M Y H:i" }}</p>
                                     {% endif %}
                                 </div>
-                            {% elif registration.payment_status == 'rejected' %}
-                                <div class="alert alert-danger mb-3" style="background-color: #FEE2E2; border: 1px solid #EF4444; border-radius: 10px; color: #991B1B;">
-                                    <i class="bi bi-x-circle-fill"></i> <strong>Pembayaran Ditolak</strong>
-                                    {% if registration.payment_rejection_reason %}
-                                        <p class="mb-1 mt-2 small"><strong>Alasan:</strong> {{ registration.payment_rejection_reason }}</p>
-                                    {% endif %}
-                                    {% if registration.payment_validated_by %}
-                                        <p class="mb-0 small"><strong>Ditolak oleh:</strong> {{ registration.payment_validated_by.name }}</p>
-                                    {% endif %}
-                                    {% if registration.payment_validated_at %}
-                                        <p class="mb-0 small"><strong>Tanggal:</strong> {{ registration.payment_validated_at|date:"d M Y H:i" }}</p>
-                                    {% endif %}
-                                </div>
-                                {% if not registration.payment_proof %}
-                                    <form method="POST" action="{% url 'registrations:upload_payment' event.id %}" enctype="multipart/form-data" class="mb-3">
-                                        {% csrf_token %}
-                                        <div class="mb-3">
-                                            <label for="{{ payment_form.payment_proof.id_for_label }}" class="form-label" style="font-weight: 600; color: #1F2937 !important;">
-                                                <i class="bi bi-upload me-1"></i> Upload Bukti Pembayaran Baru *
-                                            </label>
-                                            <input type="file" name="payment_proof" id="{{ payment_form.payment_proof.id_for_label }}" class="form-control" accept="image/*,.pdf" required style="background-color: rgba(255,255,255,0.95) !important; color: #1F2937 !important; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 0.75rem;">
-                                            {% if payment_form.payment_proof.errors %}
-                                                <div class="text-danger small mt-1" style="color: #FFD700 !important;">{{ payment_form.payment_proof.errors }}</div>
-                                            {% endif %}
-                                            <small class="d-block mt-2" style="color: #1F2937 !important;">
-                                                <i class="bi bi-info-circle"></i> Format: JPG, PNG, atau PDF (Max 5MB)
-                                            </small>
-                                        </div>
-                                        <button type="submit" class="btn w-100" style="background-color: #1E3A8A !important; color: #FFFFFF !important; font-weight: 700 !important; border-radius: 8px;">
-                                            <i class="bi bi-upload me-2" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Upload Bukti Pembayaran</span>
-                                        </button>
-                                    </form>
-                                {% endif %}
                             {% elif registration.payment_status == 'pending' %}
                                 <div class="alert alert-warning mb-3" style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 10px; color: #92400E;">
                                     <i class="bi bi-clock-history"></i> <strong>Menunggu Validasi Pembayaran</strong>
@@ -245,43 +232,67 @@
                         <a href="{% url 'registrations:history' %}" class="btn btn-vibrant w-100" style="color: #FFFFFF !important; font-weight: 700 !important;">
                             <i class="bi bi-clock-history"></i> Lihat Riwayat
                         </a>
-                    {% elif event.is_registration_open %}
-                        <!-- Payment Info untuk Event Berbayar -->
+                    {% else %}
+                        <!-- User belum terdaftar -->
                         {% if event.price and event.price > 0 %}
-                            <div class="alert alert-info mb-3" style="background-color: #DBEAFE; border: 1px solid #3B82F6; border-radius: 10px; color: #1E40AF;">
-                                <h6 class="mb-2" style="font-weight: 700;"><i class="bi bi-credit-card me-2"></i> Informasi Pembayaran</h6>
-                                <p class="mb-2"><strong>Harga:</strong> Rp {{ event.price|floatformat:0 }}</p>
-                                {% if event.bank_name and event.bank_account %}
-                                    <p class="mb-0"><strong>Transfer ke:</strong> {{ event.bank_name }} - {{ event.bank_account }}</p>
-                                {% endif %}
-                                <p class="mb-0 mt-2 small"><i class="bi bi-info-circle"></i> Setelah transfer, upload bukti pembayaran saat mendaftar.</p>
-                            </div>
-                        {% endif %}
-                        
-                        <form method="POST" action="{% url 'registrations:register_event' event.id %}" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {% if event.price and event.price > 0 %}
-                                <div class="mb-3">
-                                    <label for="payment_proof" class="form-label" style="font-weight: 600; color: #1F2937 !important;">
-                                        <i class="bi bi-upload me-1"></i> Upload Bukti Pembayaran *
-                                    </label>
-                                    <input type="file" name="payment_proof" id="payment_proof" class="form-control" accept="image/*,.pdf" required style="background-color: rgba(255,255,255,0.95) !important; color: #1F2937 !important; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 0.75rem;">
-                                    <small class="d-block mt-2" style="color: #1F2937 !important;">
-                                        <i class="bi bi-info-circle"></i> Format: JPG, PNG, atau PDF (Max 5MB)
-                                    </small>
+                            <!-- Event berbayar - cek penolakan -->
+                            {% if rejection_count > 0 and rejection_count < 3 %}
+                                <div class="alert alert-warning mb-3" style="background-color: #FEF3C7; border: 1px solid #F59E0B; border-radius: 10px; color: #92400E;">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> <strong>Pembayaran Ditolak</strong>
+                                    <p class="mb-1 mt-2 small">Pembayaran Anda telah ditolak {{ rejection_count }} kali. Anda masih bisa mendaftar ulang (maksimal 3 kali penolakan).</p>
+                                </div>
+                            {% elif rejection_count >= 3 %}
+                                <div class="alert alert-danger mb-3" style="background-color: #FEE2E2; border: 1px solid #EF4444; border-radius: 10px; color: #991B1B;">
+                                    <i class="bi bi-x-circle-fill"></i> <strong>Tidak Dapat Mendaftar</strong>
+                                    <p class="mb-0 mt-2 small">Pembayaran Anda telah ditolak lebih dari 3 kali. Anda tidak dapat mendaftar lagi untuk event ini.</p>
                                 </div>
                             {% endif %}
-                            <button type="submit" class="btn btn-vibrant btn-lg w-100 pulse" style="color: #FFFFFF !important; font-weight: 700 !important;">
-                                <i class="bi bi-lightning-charge-fill"></i> Daftar Sekarang!
+                        {% endif %}
+                        
+                        {% if event.is_registration_open %}
+                            <!-- Payment Info untuk Event Berbayar -->
+                            {% if event.price and event.price > 0 %}
+                                <div class="alert alert-info mb-3" style="background-color: #DBEAFE; border: 1px solid #3B82F6; border-radius: 10px; color: #1E40AF;">
+                                    <h6 class="mb-2" style="font-weight: 700;"><i class="bi bi-credit-card me-2"></i> Informasi Pembayaran</h6>
+                                    <p class="mb-2"><strong>Harga:</strong> Rp {{ event.price|floatformat:0 }}</p>
+                                    {% if event.bank_name and event.bank_account %}
+                                        <p class="mb-0"><strong>Transfer ke:</strong> {{ event.bank_name }} - {{ event.bank_account }}</p>
+                                    {% endif %}
+                                    <p class="mb-0 mt-2 small"><i class="bi bi-info-circle"></i> Setelah transfer, upload bukti pembayaran saat mendaftar.</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if can_register_again %}
+                                <form method="POST" action="{% url 'registrations:register_event' event.id %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% if event.price and event.price > 0 %}
+                                        <div class="mb-3">
+                                            <label for="payment_proof" class="form-label" style="font-weight: 600; color: #1F2937 !important;">
+                                                <i class="bi bi-upload me-1"></i> Upload Bukti Pembayaran *
+                                            </label>
+                                            <input type="file" name="payment_proof" id="payment_proof" class="form-control" accept="image/*,.pdf" required style="background-color: rgba(255,255,255,0.95) !important; color: #1F2937 !important; border: 1px solid rgba(255,255,255,0.5); border-radius: 10px; padding: 0.75rem;">
+                                            <small class="d-block mt-2" style="color: #1F2937 !important;">
+                                                <i class="bi bi-info-circle"></i> Format: JPG, PNG, atau PDF (Max 5MB)
+                                            </small>
+                                        </div>
+                                    {% endif %}
+                                    <button type="submit" class="btn btn-vibrant btn-lg w-100 pulse" style="color: #FFFFFF !important; font-weight: 700 !important;">
+                                        <i class="bi bi-lightning-charge-fill"></i> Daftar Sekarang!
+                                    </button>
+                                </form>
+                                <p class="text-white-50 small text-center mt-3">
+                                    <i class="bi bi-info-circle"></i> Token akan dikirim ke email Anda
+                                </p>
+                            {% else %}
+                                <button class="btn btn-secondary w-100" disabled style="opacity: 0.5;">
+                                    <i class="bi bi-lock-fill"></i> Tidak Dapat Mendaftar
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <button class="btn btn-secondary w-100" disabled style="opacity: 0.5;">
+                                <i class="bi bi-lock-fill"></i> Pendaftaran Ditutup
                             </button>
-                        </form>
-                        <p class="text-white-50 small text-center mt-3">
-                            <i class="bi bi-info-circle"></i> Token akan dikirim ke email Anda
-                        </p>
-                    {% else %}
-                        <button class="btn btn-secondary w-100" disabled style="opacity: 0.5;">
-                            <i class="bi bi-lock-fill"></i> Pendaftaran Ditutup
-                        </button>
+                        {% endif %}
                     {% endif %}
                 {% else %}
                     <div class="alert mb-3" style="background: rgba(6, 182, 212, 0.2); border: 2px solid var(--blue-neon); border-radius: 15px; color: #fff;">

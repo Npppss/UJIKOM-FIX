@@ -14,6 +14,8 @@ from utils.email_service import send_registration_token
 @email_verification_required
 def register_event(request, event_id):
     """User mendaftar kegiatan"""
+    from .models import PaymentRejection
+    
     event = get_object_or_404(Event, id=event_id, status='published', deleted_at__isnull=True)
     
     # Cek apakah sudah terdaftar
@@ -25,6 +27,13 @@ def register_event(request, event_id):
             return redirect('events:detail', event_id=event_id)
         messages.warning(request, 'Anda sudah terdaftar pada kegiatan ini.')
         return redirect('events:detail', event_id=event_id)
+    
+    # Cek jumlah penolakan pembayaran (max 3x)
+    if event.price and event.price > 0:
+        rejection_count = PaymentRejection.objects.filter(event=event, user=request.user).count()
+        if rejection_count >= 3:
+            messages.error(request, 'Anda tidak dapat mendaftar lagi. Pembayaran Anda telah ditolak lebih dari 3 kali untuk event ini.')
+            return redirect('events:detail', event_id=event_id)
     
     # Cek deadline pendaftaran
     if not event.is_registration_open():

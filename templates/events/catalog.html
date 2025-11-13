@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Katalog Kegiatan - Dynamic Experience{% endblock %}
+{% block title %}Katalog Kegiatan - EPICVIBE ORGANIZER{% endblock %}
 
 {% block extra_css %}
 <!-- TailwindCSS CDN -->
@@ -57,6 +57,23 @@
         animation: fadeInUp 0.8s ease-out 0.6s forwards;
         opacity: 0;
     }
+    
+    /* Pagination - No animation, colors always visible */
+    nav ul.flex.gap-2 li a,
+    nav ul.flex.gap-2 li span {
+        opacity: 1 !important;
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    nav ul.flex.gap-2 li a {
+        color: #1E3A8A !important;
+    }
+    
+    nav ul.flex.gap-2 li span {
+        background: linear-gradient(to right, #1E3A8A, #7C3AED) !important;
+        color: #FFFFFF !important;
+    }
 </style>
 {% endblock %}
 
@@ -69,12 +86,12 @@
     <div class="relative z-10 px-4 sm:px-6 w-full max-w-5xl mx-auto">
         <!-- Main Title -->
         <h1 class="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold mb-4 sm:mb-6 font-poppins drop-shadow-2xl fade-in-up">
-            Dynamic Experience
+            EPICVIBE ORGANIZER
         </h1>
         
         <!-- Subtitle -->
         <p class="text-base sm:text-lg md:text-2xl lg:text-3xl mb-6 sm:mb-8 md:mb-12 font-inter opacity-95 font-medium fade-in-up-delay-1 px-2">
-            Where Knowledge Meets Entertainment
+            Solusi Digital Terpadu untuk Manajemen Acara Modern
         </p>
         
         <!-- Search Bar -->
@@ -300,8 +317,8 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for event in events %}
-                    {% if 'seminar' in event.title|lower or 'conference' in event.title|lower or 'workshop' in event.title|lower or 'training' in event.title|lower %}
+                {% for event in all_events %}
+                    {% if event.category == 'seminar' %}
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
                              data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
                             {% if event.flyer %}
@@ -324,19 +341,21 @@
                                     <p class="text-gray-600"><i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}</p>
                                 </div>
                                 <a href="{% url 'events:detail' event.id %}" 
-                                   class="block w-full text-center bg-gradient-to-r from-blue-dark to-blue-600 text-white py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins">
-                                    <i class="bi bi-arrow-right-circle"></i> Book Now
+                                   class="block w-full text-center py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins"
+                                   style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; text-decoration: none !important;">
+                                    <i class="bi bi-arrow-right-circle" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Book Now</span>
                                 </a>
                             </div>
                         </div>
                     {% endif %}
-                {% empty %}
+                {% endfor %}
+                {% if not all_events %}
                     <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow">
                         <i class="bi bi-calendar-x text-6xl mb-4" style="color: #1E3A8A;"></i>
                         <h3 class="text-2xl font-bold mb-2 font-poppins" style="color: #1E3A8A;">Belum Ada Seminar</h3>
                         <p class="text-gray-600 font-inter">Tidak ada seminar yang tersedia saat ini.</p>
                     </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
 
@@ -352,8 +371,8 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for event in events %}
-                    {% if 'concert' in event.title|lower or 'festival' in event.title|lower or 'konser' in event.title|lower or 'music' in event.title|lower %}
+                {% for event in all_events %}
+                    {% if event.category == 'concert' %}
                         <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100"
                              data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:100 }}">
                             {% if event.flyer %}
@@ -376,19 +395,21 @@
                                     <p class="text-gray-600"><i class="bi bi-geo-alt-fill"></i> {{ event.location|truncatewords:5 }}</p>
                                 </div>
                                 <a href="{% url 'events:detail' event.id %}" 
-                                   class="block w-full text-center bg-gradient-to-r from-purple-bright to-purple-400 text-white py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins">
-                                    <i class="bi bi-arrow-right-circle"></i> Book Now
+                                   class="block w-full text-center py-3 rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 font-poppins"
+                                   style="background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; text-decoration: none !important;">
+                                    <i class="bi bi-arrow-right-circle" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Book Now</span>
                                 </a>
                             </div>
                         </div>
                     {% endif %}
-                {% empty %}
+                {% endfor %}
+                {% if not all_events %}
                     <div class="col-span-full text-center py-12 bg-white rounded-2xl shadow">
                         <i class="bi bi-calendar-x text-6xl mb-4" style="color: #7C3AED;"></i>
                         <h3 class="text-2xl font-bold mb-2 font-poppins" style="color: #7C3AED;">Belum Ada Konser</h3>
                         <p class="text-gray-600 font-inter">Tidak ada konser atau festival yang tersedia saat ini.</p>
                     </div>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     {% endif %}
@@ -400,7 +421,7 @@
                 {% if events.has_previous %}
                     <li>
                         <a href="?page={{ events.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
-                           class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition font-inter">
+                           class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 font-inter" style="color: #1E3A8A !important; text-decoration: none;">
                             Previous
                         </a>
                     </li>
@@ -409,14 +430,14 @@
                 {% for num in events.paginator.page_range %}
                     {% if events.number == num %}
                         <li>
-                            <span class="px-4 py-2 bg-gradient-to-r from-blue-dark to-purple-bright text-white rounded-lg shadow font-inter">
+                            <span class="px-4 py-2 bg-gradient-to-r from-blue-dark to-purple-bright text-white rounded-lg shadow font-inter" style="background: linear-gradient(to right, #1E3A8A, #7C3AED) !important; color: #FFFFFF !important;">
                                 {{ num }}
                             </span>
                         </li>
                     {% elif num > events.number|add:'-3' and num < events.number|add:'3' %}
                         <li>
                             <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
-                               class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition font-inter">
+                               class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 font-inter" style="color: #1E3A8A !important; text-decoration: none;">
                                 {{ num }}
                             </a>
                         </li>
@@ -426,7 +447,7 @@
                 {% if events.has_next %}
                     <li>
                         <a href="?page={{ events.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category %}&category={{ category }}{% endif %}" 
-                           class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 transition font-inter">
+                           class="px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50 font-inter" style="color: #1E3A8A !important; text-decoration: none;">
                             Next
                         </a>
                     </li>

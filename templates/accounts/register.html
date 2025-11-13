@@ -195,20 +195,45 @@
                             <i class="bi bi-lightning-charge-fill" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Create Account</span>
                         </button>
                     </div>
+                    
+                    <div class="d-grid mt-3">
+                        <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg" style="border: 2px solid rgba(255,255,255,0.3) !important; color: var(--blue-light) !important; font-weight: 600 !important; background: rgba(255,255,255,0.1) !important;">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Halaman Register
+                        </a>
+                    </div>
                 </form>
                 
                 <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
                 
                 <div class="text-center">
-                    <p class="mb-2 text-white-50">
-                        Sudah punya akun? 
-                        <a href="{% url 'accounts:login' %}" class="text-gradient" style="text-decoration: none; font-weight: 600;">
+                    <p class="mb-3" style="font-size: 1.1rem; font-weight: 600;">
+                        <span style="color: #1F2937 !important;">Sudah punya akun?</span> 
+                        <a href="{% url 'accounts:login' %}" style="text-decoration: none; font-weight: 700; color: #2563EB !important; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#3B82F6'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#2563EB'; this.style.textDecoration='none';">
                             Login sekarang <i class="bi bi-arrow-right"></i>
                         </a>
                     </p>
-                    <p class="mb-0 text-white-50 small">
-                        <a href="{% url 'accounts:terms' %}" class="text-white-50" style="text-decoration: none;">Syarat & Ketentuan</a> | 
-                        <a href="{% url 'accounts:privacy' %}" class="text-white-50" style="text-decoration: none;">Kebijakan Privasi</a>
+                    <p class="mb-3" style="font-size: 1rem; font-weight: 600;">
+                        <span style="color: #1F2937 !important;">Ingin daftar sebagai Event Organizer?</span> 
+                        <a href="{% url 'accounts:register_organizer' %}" style="text-decoration: none; font-weight: 700; color: #7C3AED !important; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#8B5CF6'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#7C3AED'; this.style.textDecoration='none';">
+                            Klik di sini <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </p>
+                    <p class="mb-0" style="font-size: 0.95rem; font-weight: 500;">
+                        <a href="{% url 'accounts:terms' %}" style="color: #4B5563 !important; text-decoration: none; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#1F2937'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#4B5563'; this.style.textDecoration='none';">
+                            Syarat & Ketentuan
+                        </a> 
+                        <span style="color: #6B7280 !important;">|</span> 
+                        <a href="{% url 'accounts:privacy' %}" style="color: #4B5563 !important; text-decoration: none; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#1F2937'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#4B5563'; this.style.textDecoration='none';">
+                            Kebijakan Privasi
+                        </a>
                     </p>
                 </div>
             </div>

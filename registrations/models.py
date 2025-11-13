@@ -43,3 +43,21 @@ class EventRegistration(models.Model):
     def __str__(self):
         return f"{self.user.name} - {self.event.title}"
 
+
+class PaymentRejection(models.Model):
+    """Model untuk track history penolakan pembayaran"""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='payment_rejections')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_rejections')
+    rejection_reason = models.TextField(verbose_name='Alasan Penolakan')
+    rejected_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='rejected_payments', verbose_name='Ditolak Oleh')
+    rejected_at = models.DateTimeField(auto_now_add=True, verbose_name='Tanggal Penolakan')
+    
+    class Meta:
+        db_table = 'payment_rejections'
+        verbose_name = 'Payment Rejection'
+        verbose_name_plural = 'Payment Rejections'
+        ordering = ['-rejected_at']
+    
+    def __str__(self):
+        return f"Rejection: {self.user.name} - {self.event.title} ({self.rejected_at})"
+

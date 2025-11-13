@@ -127,3 +127,93 @@ class UserSession(models.Model):
         from django.utils import timezone
         return timezone.now() > self.expired_at
 
+
+class EventOrganizer(models.Model):
+    """Model untuk Event Organizer dengan verifikasi identitas"""
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='event_organizer',
+        verbose_name='User'
+    )
+    organizer_name = models.CharField(
+        max_length=150,
+        verbose_name='Nama Organizer',
+        help_text='Nama resmi organisasi atau perusahaan'
+    )
+    person_in_charge = models.CharField(
+        max_length=100,
+        verbose_name='Penanggung Jawab',
+        help_text='Nama lengkap penanggung jawab'
+    )
+    phone_number = models.CharField(
+        max_length=15,
+        verbose_name='No. Telepon',
+        validators=[RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Format nomor telepon tidak valid")]
+    )
+    email = models.EmailField(
+        verbose_name='Email Organizer',
+        help_text='Email resmi organizer (bisa berbeda dari email user)'
+    )
+    address = models.TextField(
+        verbose_name='Alamat Organizer',
+        help_text='Alamat lengkap kantor/organisasi'
+    )
+    description = models.TextField(
+        verbose_name='Deskripsi Organizer',
+        help_text='Deskripsi singkat tentang organizer dan kegiatan yang biasa dilakukan'
+    )
+    website = models.URLField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name='Website',
+        help_text='Website organizer (opsional)'
+    )
+    social_media = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name='Social Media',
+        help_text='Link social media (Instagram, Facebook, dll) - opsional'
+    )
+    business_license = models.FileField(
+        upload_to='eo_docs/',
+        blank=True,
+        null=True,
+        verbose_name='Surat Izin Usaha',
+        help_text='Upload surat izin usaha atau dokumen legal lainnya (opsional)'
+    )
+    logo = models.ImageField(
+        upload_to='eo_logos/',
+        blank=True,
+        null=True,
+        verbose_name='Logo Organizer',
+        help_text='Logo organizer (opsional)'
+    )
+    verified = models.BooleanField(
+        default=False,
+        verbose_name='Terverifikasi',
+        help_text='Status verifikasi oleh admin'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Dibuat Pada'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Diperbarui Pada'
+    )
+    
+    class Meta:
+        db_table = 'event_organizers'
+        verbose_name = 'Event Organizer'
+        verbose_name_plural = 'Event Organizers'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return self.organizer_name
+    
+    def is_verified(self):
+        return self.verified
+

@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Daftar Event Organizer - EPICVIBE ORGANIZER{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-5 mb-3 sm:mb-5 px-3 sm:px-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-9">
+            <div class="glass-card fade-in-up">
+                <div class="text-center mb-3 sm:mb-4">
+                    <h2 class="text-gradient mb-2" style="font-size: 1.75rem; font-weight: 900;">
+                        <i class="bi bi-building"></i> Daftar Event Organizer
+                    </h2>
+                    <p class="text-white-50" style="font-size: 0.9rem;">Daftarkan organisasi Anda dan mulai membuat event yang menarik!</p>
+                </div>
+                
+                <form method="POST" enctype="multipart/form-data" id="registerOrganizerForm">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert" style="background: rgba(236, 72, 153, 0.2); border: 2px solid var(--pink-neon); border-radius: 15px; color: #fff;">
+                            <strong><i class="bi bi-exclamation-triangle"></i> Error:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- User Account Information -->
+                    <div class="mb-4">
+                        <h5 class="text-gradient mb-3" style="font-size: 1.1rem; font-weight: 700;">
+                            <i class="bi bi-person-circle"></i> Informasi Akun
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                {% endif %}
+                                {% if form.email.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.email.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.password1.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-lock"></i> Password
+                                </label>
+                                <div class="input-group">
+                                    {{ form.password1 }}
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword1" style="border-left: none; background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: var(--blue-light); z-index: 10;">
+                                        <i class="bi bi-eye" id="togglePassword1Icon"></i>
+                                    </button>
+                                </div>
+                                {% if form.password1.help_text %}
+                                    <small class="form-text d-block mt-2" style="color: #1F2937 !important; background-color: #F3F4F6; padding: 0.75rem; border-radius: 8px; border-left: 4px solid #1E3A8A;">
+                                        <strong style="color: #1E3A8A !important; display: block; margin-bottom: 0.5rem;">
+                                            <i class="bi bi-info-circle me-1"></i> Persyaratan Password:
+                                        </strong>
+                                        <span style="color: #1F2937 !important;">{{ form.password1.help_text }}</span>
+                                    </small>
+                                {% endif %}
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password1.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.password2.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-lock-fill"></i> Konfirmasi Password
+                                </label>
+                                <div class="input-group">
+                                    {{ form.password2 }}
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword2" style="border-left: none; background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: var(--blue-light); z-index: 10;">
+                                        <i class="bi bi-eye" id="togglePassword2Icon"></i>
+                                    </button>
+                                </div>
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small mt-1">{{ form.password2.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
+                    
+                    <!-- Event Organizer Information -->
+                    <div class="mb-4">
+                        <h5 class="text-gradient mb-3" style="font-size: 1.1rem; font-weight: 700;">
+                            <i class="bi bi-building"></i> Informasi Event Organizer
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.organizer_name.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-building"></i> Nama Organizer <span class="text-danger">*</span>
+                                </label>
+                                {{ form.organizer_name }}
+                                {% if form.organizer_name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.organizer_name.errors }}</div>
+                                {% endif %}
+                                {% if form.organizer_name.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.organizer_name.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.person_in_charge.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-person-badge"></i> Penanggung Jawab <span class="text-danger">*</span>
+                                </label>
+                                {{ form.person_in_charge }}
+                                {% if form.person_in_charge.errors %}
+                                    <div class="text-danger small mt-1">{{ form.person_in_charge.errors }}</div>
+                                {% endif %}
+                                {% if form.person_in_charge.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.person_in_charge.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-phone"></i> No. Telepon <span class="text-danger">*</span>
+                                </label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}
+                                    <div class="text-danger small mt-1">{{ form.phone_number.errors }}</div>
+                                {% endif %}
+                                {% if form.phone_number.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.phone_number.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.organizer_email.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-envelope-at"></i> Email Organizer <span class="text-danger">*</span>
+                                </label>
+                                {{ form.organizer_email }}
+                                {% if form.organizer_email.errors %}
+                                    <div class="text-danger small mt-1">{{ form.organizer_email.errors }}</div>
+                                {% endif %}
+                                {% if form.organizer_email.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.organizer_email.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-geo-alt"></i> Alamat Organizer <span class="text-danger">*</span>
+                            </label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger small mt-1">{{ form.address.errors }}</div>
+                            {% endif %}
+                            {% if form.address.help_text %}
+                                <small class="form-text text-white-50 d-block mt-1">{{ form.address.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                <i class="bi bi-file-text"></i> Deskripsi Organizer <span class="text-danger">*</span>
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                            {% if form.description.help_text %}
+                                <small class="form-text text-white-50 d-block mt-1">{{ form.description.help_text }}</small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.website.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-globe"></i> Website
+                                </label>
+                                {{ form.website }}
+                                {% if form.website.errors %}
+                                    <div class="text-danger small mt-1">{{ form.website.errors }}</div>
+                                {% endif %}
+                                {% if form.website.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.website.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.social_media.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-share"></i> Social Media
+                                </label>
+                                {{ form.social_media }}
+                                {% if form.social_media.errors %}
+                                    <div class="text-danger small mt-1">{{ form.social_media.errors }}</div>
+                                {% endif %}
+                                {% if form.social_media.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.social_media.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.business_license.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-file-earmark-pdf"></i> Surat Izin Usaha
+                                </label>
+                                {{ form.business_license }}
+                                {% if form.business_license.errors %}
+                                    <div class="text-danger small mt-1">{{ form.business_license.errors }}</div>
+                                {% endif %}
+                                {% if form.business_license.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.business_license.help_text }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-12 col-md-6 mb-3">
+                                <label for="{{ form.logo.id_for_label }}" class="form-label" style="color: var(--blue-light); font-weight: 600;">
+                                    <i class="bi bi-image"></i> Logo Organizer
+                                </label>
+                                {{ form.logo }}
+                                {% if form.logo.errors %}
+                                    <div class="text-danger small mt-1">{{ form.logo.errors }}</div>
+                                {% endif %}
+                                {% if form.logo.help_text %}
+                                    <small class="form-text text-white-50 d-block mt-1">{{ form.logo.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if form.errors %}
+                        <div class="alert mb-3" style="background: rgba(59, 130, 246, 0.2); border: 2px solid var(--blue-primary); border-radius: 15px; color: #fff;">
+                            <strong><i class="bi bi-exclamation-triangle"></i> Mohon perbaiki error berikut:</strong>
+                            <ul class="mb-0 mt-2">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Terms & Conditions Checkbox -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="termsCheckbox" name="terms_accepted" required>
+                            <label class="form-check-label" for="termsCheckbox" style="color: var(--blue-light); font-weight: 500;">
+                                Saya setuju dengan 
+                                <a href="{% url 'accounts:terms' %}" target="_blank" style="color: var(--cyan-bright); text-decoration: underline;">Syarat & Ketentuan</a> 
+                                dan 
+                                <a href="{% url 'accounts:privacy' %}" target="_blank" style="color: var(--cyan-bright); text-decoration: underline;">Kebijakan Privasi</a>
+                            </label>
+                        </div>
+                        <div id="termsError" class="text-danger small mt-1" style="display: none;">
+                            <i class="bi bi-exclamation-circle"></i> Anda harus menyetujui Syarat & Ketentuan dan Kebijakan Privasi untuk melanjutkan.
+                        </div>
+                    </div>
+                    
+                    <!-- reCAPTCHA Placeholder -->
+                    <div class="mb-4">
+                        <div class="alert" style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--blue-primary); border-radius: 10px; color: #fff; padding: 1rem;">
+                            <i class="bi bi-shield-check"></i> <strong>reCAPTCHA</strong> - Placeholder untuk integrasi Google reCAPTCHA
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-vibrant btn-lg" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none !important;">
+                            <i class="bi bi-building" style="color: #FFFFFF !important;"></i> <span style="color: #FFFFFF !important;">Daftar Event Organizer</span>
+                        </button>
+                    </div>
+                    
+                    <div class="d-grid mt-3">
+                        <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg" style="border: 2px solid rgba(255,255,255,0.3) !important; color: var(--blue-light) !important; font-weight: 600 !important; background: rgba(255,255,255,0.1) !important;">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Halaman Register
+                        </a>
+                    </div>
+                </form>
+                
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0;">
+                
+                <div class="text-center">
+                    <p class="mb-3" style="font-size: 1.1rem; font-weight: 600;">
+                        <span style="color: #1F2937 !important;">Sudah punya akun?</span> 
+                        <a href="{% url 'accounts:login' %}" style="text-decoration: none; font-weight: 700; color: #2563EB !important; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#3B82F6'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#2563EB'; this.style.textDecoration='none';">
+                            Login sekarang <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </p>
+                    <p class="mb-3" style="font-size: 1rem; font-weight: 600;">
+                        <span style="color: #1F2937 !important;">Ingin daftar sebagai User?</span> 
+                        <a href="{% url 'accounts:register_user' %}" style="text-decoration: none; font-weight: 700; color: #2563EB !important; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#3B82F6'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#2563EB'; this.style.textDecoration='none';">
+                            Klik di sini <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </p>
+                    <p class="mb-0" style="font-size: 0.95rem; font-weight: 500;">
+                        <a href="{% url 'accounts:terms' %}" style="color: #4B5563 !important; text-decoration: none; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#1F2937'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#4B5563'; this.style.textDecoration='none';">
+                            Syarat & Ketentuan
+                        </a> 
+                        <span style="color: #6B7280 !important;">|</span> 
+                        <a href="{% url 'accounts:privacy' %}" style="color: #4B5563 !important; text-decoration: none; transition: all 0.3s ease;" 
+                           onmouseover="this.style.color='#1F2937'; this.style.textDecoration='underline';" 
+                           onmouseout="this.style.color='#4B5563'; this.style.textDecoration='none';">
+                            Kebijakan Privasi
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle password visibility
+    const password1Field = document.querySelector('#id_password1');
+    const password2Field = document.querySelector('#id_password2');
+    const togglePassword1 = document.getElementById('togglePassword1');
+    const togglePassword1Icon = document.getElementById('togglePassword1Icon');
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const togglePassword2Icon = document.getElementById('togglePassword2Icon');
+    
+    if (password1Field && togglePassword1) {
+        togglePassword1.addEventListener('click', function() {
+            const type = password1Field.getAttribute('type') === 'password' ? 'text' : 'password';
+            password1Field.setAttribute('type', type);
+            
+            if (type === 'password') {
+                togglePassword1Icon.classList.remove('bi-eye-slash');
+                togglePassword1Icon.classList.add('bi-eye');
+            } else {
+                togglePassword1Icon.classList.remove('bi-eye');
+                togglePassword1Icon.classList.add('bi-eye-slash');
+            }
+        });
+    }
+    
+    if (password2Field && togglePassword2) {
+        togglePassword2.addEventListener('click', function() {
+            const type = password2Field.getAttribute('type') === 'password' ? 'text' : 'password';
+            password2Field.setAttribute('type', type);
+            
+            if (type === 'password') {
+                togglePassword2Icon.classList.remove('bi-eye-slash');
+                togglePassword2Icon.classList.add('bi-eye');
+            } else {
+                togglePassword2Icon.classList.remove('bi-eye');
+                togglePassword2Icon.classList.add('bi-eye-slash');
+            }
+        });
+    }
+    
+    // Password match validation
+    if (password1Field && password2Field) {
+        password2Field.addEventListener('input', function() {
+            const password1 = password1Field.value;
+            const password2 = this.value;
+            
+            if (password2.length > 0) {
+                if (password1 === password2) {
+                    // Show success message
+                    const matchDiv = document.createElement('div');
+                    matchDiv.className = 'text-success small mt-1';
+                    matchDiv.innerHTML = '<i class="bi bi-check-circle"></i> Password cocok';
+                    const existingMatch = this.parentElement.querySelector('.password-match');
+                    if (existingMatch) existingMatch.remove();
+                    matchDiv.classList.add('password-match');
+                    this.parentElement.appendChild(matchDiv);
+                } else {
+                    // Show error message
+                    const matchDiv = document.createElement('div');
+                    matchDiv.className = 'text-danger small mt-1';
+                    matchDiv.innerHTML = '<i class="bi bi-x-circle"></i> Password tidak cocok';
+                    const existingMatch = this.parentElement.querySelector('.password-match');
+                    if (existingMatch) existingMatch.remove();
+                    matchDiv.classList.add('password-match');
+                    this.parentElement.appendChild(matchDiv);
+                }
+            }
+        });
+    }
+    
+    // Terms checkbox validation
+    const form = document.getElementById('registerOrganizerForm');
+    const termsCheckbox = document.getElementById('termsCheckbox');
+    const termsError = document.getElementById('termsError');
+    
+    if (form && termsCheckbox) {
+        form.addEventListener('submit', function(e) {
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                termsError.style.display = 'block';
+                termsCheckbox.focus();
+                return false;
+            } else {
+                termsError.style.display = 'none';
+            }
+        });
+        
+        termsCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                termsError.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+

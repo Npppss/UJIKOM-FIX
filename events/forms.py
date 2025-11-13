@@ -8,7 +8,7 @@ from .models import Event, ReportEvent, News, NewsComment
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'category', 'description', 'event_date', 'event_time', 'location_type', 'location', 'zoom_link', 'zoom_meeting_id', 'zoom_passcode', 'price', 'bank_name', 'bank_account', 'flyer', 'certificate_template']
+        fields = ['title', 'category', 'description', 'event_date', 'event_time', 'location_type', 'location', 'zoom_link', 'zoom_meeting_id', 'zoom_passcode', 'price', 'bank_name', 'bank_account', 'flyer', 'certificate_template', 'material_file']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
@@ -25,6 +25,7 @@ class EventForm(forms.ModelForm):
             'bank_account': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nomor rekening untuk pembayaran'}),
             'flyer': forms.FileInput(attrs={'class': 'form-control'}),
             'certificate_template': forms.FileInput(attrs={'class': 'form-control'}),
+            'material_file': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'title': 'Judul Kegiatan',
@@ -42,6 +43,7 @@ class EventForm(forms.ModelForm):
             'bank_account': 'Nomor Rekening',
             'flyer': 'Flyer Kegiatan',
             'certificate_template': 'Template Sertifikat',
+            'material_file': 'Materi Seminar',
         }
     
     def clean(self):
@@ -101,6 +103,22 @@ class EventForm(forms.ModelForm):
                 raise ValidationError('Ukuran file template sertifikat maksimal 10MB')
         
         return template
+    
+    def clean_material_file(self):
+        material_file = self.cleaned_data.get('material_file')
+        
+        if material_file:
+            # Validasi ukuran file (max 50MB untuk materi)
+            if material_file.size > 50 * 1024 * 1024:
+                raise ValidationError('Ukuran file materi maksimal 50MB')
+            
+            # Validasi jenis file (PDF, PPT, DOCX, ZIP)
+            allowed_extensions = ['.pdf', '.ppt', '.pptx', '.doc', '.docx', '.zip']
+            file_name = material_file.name.lower()
+            if not any(file_name.endswith(ext) for ext in allowed_extensions):
+                raise ValidationError('File materi harus berupa PDF, PPT, PPTX, DOC, DOCX, atau ZIP')
+        
+        return material_file
 
 
 class ReportEventForm(forms.ModelForm):

@@ -43,6 +43,13 @@ class Event(models.Model):
         blank=True,
         verbose_name='Template Sertifikat'
     )
+    material_file = models.FileField(
+        upload_to='event_materials/',
+        null=True,
+        blank=True,
+        verbose_name='Materi Seminar',
+        help_text='Upload materi seminar (PDF, PPT, DOCX, ZIP). Hanya untuk event kategori Seminar.'
+    )
     registration_closed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -99,6 +106,37 @@ class Event(models.Model):
         now = timezone.localtime()  # Otomatis menggunakan TIME_ZONE dari settings
         
         return now >= event_datetime
+    
+    def can_access_material(self, user):
+        """
+        Cek apakah user bisa mengakses materi seminar
+        Kondisi:
+        1. User harus login
+        2. Event kategori = 'seminar'
+        3. Event status = 'completed' (Selesai)
+        4. User harus terdaftar di event tersebut
+        5. Material file harus ada
+        """
+        if not user or not user.is_authenticated:
+            return False
+        
+        if self.category != 'seminar':
+            return False
+        
+        if self.status != 'completed':
+            return False
+        
+        if not self.material_file:
+            return False
+        
+        # Cek apakah user terdaftar
+        from registrations.models import EventRegistration
+        is_registered = EventRegistration.objects.filter(
+            event=self,
+            user=user
+        ).exists()
+        
+        return is_registered
 
 
 class ReportEvent(models.Model):

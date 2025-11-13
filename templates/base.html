@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{% block title %}Dynamic Experience - Where Knowledge Meets Entertainment{% endblock %}</title>
+    <title>{% block title %}EPICVIBE ORGANIZER - Solusi Digital Terpadu untuk Manajemen Acara Modern{% endblock %}</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -227,40 +227,49 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/60 backdrop-blur-md border-b border-gray-200/50 shadow-sm transition-all duration-300" id="navbar" style="overflow: visible !important;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
-                <!-- Left: Logo -->
-                <div class="flex items-center">
-                    <a href="{% url 'events:index' %}" class="font-bold text-lg md:text-xl font-poppins hover:scale-105 transition-transform" style="color: #1E3A8A;">
-                        Dynamic Experience
+                <!-- Left: Mobile Menu Button + Logo -->
+                <div class="flex items-center space-x-3">
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button type="button" id="mobileMenuButton" class="p-2 text-gray-700 hover:text-blue-dark focus:outline-none" aria-label="Toggle menu">
+                            <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+                        </button>
+                    </div>
+                    <!-- Logo -->
+                    <a href="{% url 'events:index' %}" class="flex items-center gap-2 font-bold text-lg md:text-xl font-poppins hover:scale-105 transition-transform" style="color: #1E3A8A;">
+                        {% load static %}
+                        <img src="{% static 'assets/logo-epicvibe.png' %}" alt="EPICVIBE ORGANIZER" style="height: 40px; width: auto;" onerror="this.style.display='none';">
+                        <span>EPICVIBE ORGANIZER</span>
                     </a>
                 </div>
                 
-                    <!-- Center: Menu Links (Desktop) -->
-                    <div class="hidden md:flex items-center space-x-8">
-                        <a href="{% url 'events:index' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
-                            Beranda
-                        </a>
-                        <a href="{% url 'events:catalog' %}?category=seminar" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
-                            Seminar
-                        </a>
-                        <a href="{% url 'events:catalog' %}?category=concert" class="text-gray-700 hover:text-purple-bright font-medium font-inter transition-colors duration-200">
-                            Konser
-                        </a>
-                        <a href="{% url 'events:news_list' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
-                            Berita
-                        </a>
-                        {% if user.is_authenticated %}
-                        <a href="{% url 'events:chatbot' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
-                            Tanya Dexy
-                        </a>
-                        {% else %}
-                        <a href="{% url 'events:faq' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
-                            FAQ
-                        </a>
-                        {% endif %}
-                    </div>
+                <!-- Center: Menu Links (Desktop) -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'events:index' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
+                        Beranda
+                    </a>
+                    <a href="{% url 'events:catalog' %}?category=seminar" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
+                        Seminar
+                    </a>
+                    <a href="{% url 'events:catalog' %}?category=concert" class="text-gray-700 hover:text-purple-bright font-medium font-inter transition-colors duration-200">
+                        Konser
+                    </a>
+                    <a href="{% url 'events:news_list' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
+                        Berita
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'events:chatbot' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
+                        Tanya Dexy
+                    </a>
+                    {% else %}
+                    <a href="{% url 'events:faq' %}" class="text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200">
+                        FAQ
+                    </a>
+                    {% endif %}
+                </div>
                 
                 <!-- Right: Login/Register or User Menu, Dark Mode Toggle -->
-                <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-4">
                     {% if user.is_authenticated %}
                         <div class="dropdown" style="position: relative; z-index: 99999;">
                             <button class="btn d-flex align-items-center gap-2 border-0 bg-transparent p-2" style="color: #1F2937;" type="button" id="userDropdownNav" data-bs-toggle="dropdown" aria-expanded="false">
@@ -340,12 +349,119 @@
                         </a>
                     {% endif %}
                 </div>
+                
+                <!-- Mobile: Login/Register or User Menu -->
+                <div class="md:hidden flex items-center">
+                    {% if user.is_authenticated %}
+                        <div class="dropdown" style="position: relative; z-index: 99999;">
+                            <button class="btn d-flex align-items-center gap-2 border-0 bg-transparent p-2" style="color: #1F2937;" type="button" id="userDropdownNavMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle" style="font-size: 1.5rem; color: #1F2937;"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg" id="userDropdownMenuMobile" aria-labelledby="userDropdownNavMobile" style="min-width: 220px; border: 2px solid #1E3A8A !important; border-radius: 8px; background-color: #FFFFFF !important; z-index: 99999 !important; margin-top: 0.5rem !important; padding: 0.75rem 0 !important;">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                        <i class="bi bi-person-circle me-2"></i> Profile
+                                    </a>
+                                </li>
+                                {% if user.role == 'user' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'dashboard:user' %}">
+                                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'registrations:history' %}">
+                                            <i class="bi bi-clock-history me-2"></i> Riwayat
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'certificates:list' %}">
+                                            <i class="bi bi-award me-2"></i> Sertifikat
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'events:my_reports' %}">
+                                            <i class="bi bi-flag me-2"></i> Riwayat Report Event
+                                        </a>
+                                    </li>
+                                {% elif user.role == 'admin' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'dashboard:admin' %}">
+                                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'events:list' %}">
+                                            <i class="bi bi-calendar-check me-2"></i> Kelola Kegiatan
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'events:review_reports' %}">
+                                            <i class="bi bi-flag me-2"></i> Review Laporan
+                                        </a>
+                                    </li>
+                                {% elif user.role == 'event_organizer' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'dashboard:organizer' %}">
+                                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'events:list' %}">
+                                            <i class="bi bi-calendar-check me-2"></i> Kelola Kegiatan
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="px-3 py-2 text-gray-700 hover:text-blue-dark font-medium font-inter transition-colors duration-200 text-sm">
+                            Login
+                        </a>
+                        <a href="{% url 'accounts:register' %}" class="px-3 py-2 rounded-full font-semibold font-inter hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm" style="background-color: #1E3A8A; color: #FFD700; font-weight: 700;">
+                            Daftar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200 shadow-lg">
+            <div class="px-4 py-3 space-y-2">
+                <a href="{% url 'events:index' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-dark font-medium font-inter transition-colors duration-200 rounded-lg">
+                    <i class="bi bi-house me-2"></i> Beranda
+                </a>
+                <a href="{% url 'events:catalog' %}?category=seminar" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-dark font-medium font-inter transition-colors duration-200 rounded-lg">
+                    <i class="bi bi-mortarboard me-2"></i> Seminar
+                </a>
+                <a href="{% url 'events:catalog' %}?category=concert" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-bright font-medium font-inter transition-colors duration-200 rounded-lg">
+                    <i class="bi bi-music-note-beamed me-2"></i> Konser
+                </a>
+                <a href="{% url 'events:news_list' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-dark font-medium font-inter transition-colors duration-200 rounded-lg">
+                    <i class="bi bi-newspaper me-2"></i> Berita
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'events:chatbot' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-dark font-medium font-inter transition-colors duration-200 rounded-lg">
+                    <i class="bi bi-robot me-2"></i> Tanya Dexy
+                </a>
+                {% else %}
+                <a href="{% url 'events:faq' %}" class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-dark font-medium font-inter transition-colors duration-200 rounded-lg">
+                    <i class="bi bi-question-circle me-2"></i> FAQ
+                </a>
+                {% endif %}
             </div>
         </div>
     </nav>
     
     <!-- Spacer untuk fixed navbar -->
-    <div class="h-16 md:h-20"></div>
+    <div class="h-16 md:h-20" id="navbarSpacer"></div>
 
     <!-- Messages -->
     <div class="container mt-3">
@@ -371,10 +487,10 @@
                 <!-- Company Info -->
                 <div>
                     <h5 class="font-bold text-lg mb-3 font-poppins" style="color: #1E3A8A;">
-                        Dynamic Experience
+                        EPICVIBE ORGANIZER
                     </h5>
                     <p class="text-gray-600 font-inter" style="font-weight: 500;">
-                        Where Knowledge Meets Entertainment
+                        Solusi Digital Terpadu untuk Manajemen Acara Modern
                     </p>
                 </div>
                 
@@ -383,10 +499,10 @@
                     <h6 class="font-semibold text-gray-800 mb-3 font-poppins">Contact Us</h6>
                     <ul class="space-y-2 text-gray-600 font-inter">
                         <li class="flex items-center gap-2">
-                            <i class="bi bi-envelope"></i> info@dynamicexperience.com
+                            <i class="bi bi-envelope"></i> novandrae7980@gmail.com
                         </li>
                         <li class="flex items-center gap-2">
-                            <i class="bi bi-telephone"></i> +62 123 456 7890
+                            <i class="bi bi-telephone"></i> +6281931599440
                         </li>
                         <li class="flex items-center gap-2">
                             <i class="bi bi-geo-alt"></i> Jakarta, Indonesia
@@ -412,7 +528,7 @@
             <!-- Copyright -->
             <hr class="border-gray-200 my-6">
             <div class="text-center">
-                <p class="text-gray-600 font-inter text-sm">&copy; 2024 Dynamic Experience. All rights reserved.</p>
+                <p class="text-gray-600 font-inter text-sm">&copy; 2024 EPICVIBE ORGANIZER. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -437,6 +553,51 @@
         });
 
         // CRITICAL: Force Dropdown Menu Visibility
+        // Mobile Menu Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const navbarSpacer = document.getElementById('navbarSpacer');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    const isHidden = mobileMenu.classList.contains('hidden');
+                    
+                    if (isHidden) {
+                        mobileMenu.classList.remove('hidden');
+                        mobileMenuButton.querySelector('i').classList.remove('bi-list');
+                        mobileMenuButton.querySelector('i').classList.add('bi-x-lg');
+                        // Adjust spacer height when menu is open
+                        if (navbarSpacer) {
+                            navbarSpacer.style.height = 'auto';
+                        }
+                    } else {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuButton.querySelector('i').classList.remove('bi-x-lg');
+                        mobileMenuButton.querySelector('i').classList.add('bi-list');
+                        // Reset spacer height
+                        if (navbarSpacer) {
+                            navbarSpacer.style.height = '';
+                        }
+                    }
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+                        if (!mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                            mobileMenuButton.querySelector('i').classList.remove('bi-x-lg');
+                            mobileMenuButton.querySelector('i').classList.add('bi-list');
+                            if (navbarSpacer) {
+                                navbarSpacer.style.height = '';
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownButton = document.getElementById('userDropdownNav');
             const dropdownMenu = document.getElementById('userDropdownMenu');

@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pilih Tipe Akun - EPICVIBE ORGANIZER{% endblock %}
+
+{% block content %}
+<div class="container mt-3 sm:mt-5 mb-3 sm:mb-5 px-3 sm:px-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="text-center mb-4 sm:mb-5 fade-in-up">
+                <h1 class="mb-2" style="font-size: 2rem; font-weight: 900; color: #1F2937 !important;">
+                    <i class="bi bi-person-plus"></i> Daftar Akun
+                </h1>
+                <p style="font-size: 1.1rem; color: #1F2937 !important;">Pilih tipe akun yang sesuai dengan kebutuhan Anda</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <!-- User Registration Card -->
+                <div class="col-12 col-md-6 fade-in-up-delay-1">
+                    <div class="glass-card h-100 text-center" style="cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;" 
+                         onmouseover="this.style.borderColor='var(--cyan-bright)'; this.style.transform='translateY(-5px)';" 
+                         onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)';"
+                         onclick="window.location.href='{% url 'accounts:register_user' %}'">
+                        <div class="mb-4">
+                            <div class="d-inline-block p-4 rounded-circle" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%);">
+                                <i class="bi bi-person-circle" style="font-size: 4rem; color: #FFFFFF;"></i>
+                            </div>
+                        </div>
+                        <h3 class="mb-3" style="font-size: 1.5rem; font-weight: 700; color: #1F2937 !important;">
+                            <i class="bi bi-person"></i> Daftar sebagai User
+                        </h3>
+                        <p class="mb-4" style="font-size: 0.95rem; line-height: 1.6; color: #1F2937 !important;">
+                            Daftar sebagai peserta event. Anda dapat mendaftar ke berbagai event, mengisi daftar hadir, dan mendapatkan sertifikat.
+                        </p>
+                        <ul class="list-unstyled text-start mb-4" style="color: #1F2937 !important;">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--cyan-bright);"></i>
+                                Daftar ke berbagai event
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--cyan-bright);"></i>
+                                Isi daftar hadir dengan token
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--cyan-bright);"></i>
+                                Download sertifikat
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--cyan-bright);"></i>
+                                Lihat riwayat kegiatan
+                            </li>
+                        </ul>
+                        <a href="{% url 'accounts:register_user' %}" class="btn btn-vibrant btn-lg w-100" style="background: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none !important;">
+                            <i class="bi bi-arrow-right-circle"></i> Daftar sebagai User
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Event Organizer Registration Card -->
+                <div class="col-12 col-md-6 fade-in-up-delay-1">
+                    <div class="glass-card h-100 text-center" style="cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;" 
+                         onmouseover="this.style.borderColor='var(--purple-neon)'; this.style.transform='translateY(-5px)';" 
+                         onmouseout="this.style.borderColor='transparent'; this.style.transform='translateY(0)';"
+                         onclick="window.location.href='{% url 'accounts:register_organizer' %}'">
+                        <div class="mb-4">
+                            <div class="d-inline-block p-4 rounded-circle" style="background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%);">
+                                <i class="bi bi-people-fill" style="font-size: 4rem; color: #FFFFFF;"></i>
+                            </div>
+                        </div>
+                        <h3 class="mb-3" style="font-size: 1.5rem; font-weight: 700; color: #1F2937 !important;">
+                            <i class="bi bi-people"></i> Daftar sebagai Event Organizer
+                        </h3>
+                        <p class="mb-4" style="font-size: 0.95rem; line-height: 1.6; color: #1F2937 !important;">
+                            Daftar sebagai penyelenggara event. Buat dan kelola event Anda, validasi pembayaran, dan kelola peserta.
+                        </p>
+                        <ul class="list-unstyled text-start mb-4" style="color: #1F2937 !important;">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--purple-neon);"></i>
+                                Buat dan kelola event
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--purple-neon);"></i>
+                                Validasi pembayaran peserta
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--purple-neon);"></i>
+                                Kelola daftar peserta
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill me-2" style="color: var(--purple-neon);"></i>
+                                Generate sertifikat otomatis
+                            </li>
+                        </ul>
+                        <a href="{% url 'accounts:register_organizer' %}" class="btn btn-vibrant btn-lg w-100" style="background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%) !important; color: #FFFFFF !important; font-weight: 700 !important; border: none !important;">
+                            <i class="bi bi-arrow-right-circle"></i> Daftar sebagai Event Organizer
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4 sm:mt-5">
+                <p class="mb-2" style="color: #1F2937 !important;">
+                    Sudah punya akun? 
+                    <a href="{% url 'accounts:login' %}" style="text-decoration: none; font-weight: 600; color: #2563EB !important;">
+                        Login sekarang <i class="bi bi-arrow-right"></i>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    .fade-in-up-delay-1 {
+        animation: fadeInUp 0.8s ease-out 0.2s forwards;
+        opacity: 0;
+    }
+    
+    .glass-card {
+        padding: 2.5rem;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 640px) {
+        .glass-card {
+            padding: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 1.75rem !important;
+        }
+        
+        h3 {
+            font-size: 1.25rem !important;
+        }
+    }
+</style>
+{% endblock %}
+

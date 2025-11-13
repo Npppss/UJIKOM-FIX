@@ -34,10 +34,10 @@ def index(request):
 
 def catalog(request):
     """Katalog kegiatan publik (tidak perlu login)"""
+    # Tampilkan event dengan status published atau completed
     events = Event.objects.filter(
-        status='published',
-        deleted_at__isnull=True,
-        registration_closed_at__gt=timezone.now()
+        status__in=['published', 'completed'],
+        deleted_at__isnull=True
     )
     
     # Search
@@ -49,24 +49,12 @@ def catalog(request):
             Q(location__icontains=search_query)
         )
     
-    # Category Filter
+    # Category Filter - menggunakan field category dari model
     category = request.GET.get('category', '')
     if category == 'seminar':
-        events = events.exclude(
-            Q(title__icontains='concert') |
-            Q(title__icontains='festival') |
-            Q(title__icontains='konser') |
-            Q(description__icontains='concert') |
-            Q(description__icontains='festival')
-        )
+        events = events.filter(category='seminar')
     elif category == 'concert':
-        events = events.filter(
-            Q(title__icontains='concert') |
-            Q(title__icontains='festival') |
-            Q(title__icontains='konser') |
-            Q(description__icontains='concert') |
-            Q(description__icontains='festival')
-        )
+        events = events.filter(category='concert')
     
     # Sorting
     sort_by = request.GET.get('sort', 'nearest')
@@ -84,21 +72,48 @@ def catalog(request):
     # Get featured event (nearest upcoming event)
     featured_event = None
     all_events = Event.objects.filter(
-        status='published',
-        deleted_at__isnull=True,
-        registration_closed_at__gt=timezone.now()
+        status__in=['published', 'completed'],
+        deleted_at__isnull=True
     ).order_by('event_date', 'event_time').first()
     
     if all_events:
         featured_event = all_events
     
-    # Pagination
+    # Untuk "Semua Kategori", kita perlu semua event tanpa pagination di template
+    # Tapi tetap paginate untuk performa
     paginator = Paginator(events, 12)
     page = request.GET.get('page')
     events = paginator.get_page(page)
     
+    # Untuk "Semua Kategori", kita perlu semua event (tanpa pagination) untuk ditampilkan di kedua section
+    all_events_for_display = None
+    if not category:
+        # Ambil semua event tanpa pagination untuk ditampilkan di kedua section
+        all_events_for_display = Event.objects.filter(
+            status__in=['published', 'completed'],
+            deleted_at__isnull=True
+        )
+        if search_query:
+            all_events_for_display = all_events_for_display.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(location__icontains=search_query)
+            )
+        # Apply sorting
+        if sort_by == 'newest':
+            all_events_for_display = all_events_for_display.order_by('-event_date', '-event_time')
+        elif sort_by == 'oldest':
+            all_events_for_display = all_events_for_display.order_by('event_date', 'event_time')
+        elif sort_by == 'most_participants':
+            all_events_for_display = all_events_for_display.annotate(
+                participant_count=Count('registrations')
+            ).order_by('-participant_count')
+        else:  # nearest (default)
+            all_events_for_display = all_events_for_display.order_by('event_date', 'event_time')
+    
     return render(request, 'events/catalog.html', {
         'events': events,
+        'all_events': all_events_for_display,  # Untuk "Semua Kategori"
         'search_query': search_query,
         'sort_by': sort_by,
         'category': category,
@@ -235,7 +250,8 @@ def detail(request, event_id):
     from registrations.models import EventRegistration
     from registrations.forms import PaymentProofForm
     
-    event = get_object_or_404(Event, id=event_id, status='published', deleted_at__isnull=True)
+    # Allow viewing published and completed events (completed untuk akses materi)
+    event = get_object_or_404(Event, id=event_id, status__in=['published', 'completed'], deleted_at__isnull=True)
     
     # Cek apakah user sudah terdaftar
     is_registered = False
@@ -252,13 +268,60 @@ def detail(request, event_id):
         if event.price and event.price > 0 and is_registered and not registration.payment_proof:
             payment_form = PaymentProofForm()
     
+    # Cek apakah user bisa akses materi seminar
+    can_access_material = False
+    if request.user.is_authenticated:
+        can_access_material = event.can_access_material(request.user)
+    
+    # Cek jumlah penolakan pembayaran (untuk event berbayar)
+    rejection_count = 0
+    can_register_again = True
+    if request.user.is_authenticated and event.price and event.price > 0:
+        from registrations.models import PaymentRejection
+        rejection_count = PaymentRejection.objects.filter(event=event, user=request.user).count()
+        can_register_again = rejection_count < 3
+    
     return render(request, 'events/detail.html', {
         'event': event,
         'is_registered': is_registered,
         'has_reported': has_reported,
         'registration': registration,
-        'payment_form': payment_form
+        'payment_form': payment_form,
+        'can_access_material': can_access_material,
+        'rejection_count': rejection_count,
+        'can_register_again': can_register_again
     })
+
+
+@login_required
+def download_material(request, event_id):
+    """Download materi seminar untuk user yang terdaftar"""
+    from django.http import FileResponse, Http404
+    from registrations.models import EventRegistration
+    
+    event = get_object_or_404(Event, id=event_id, deleted_at__isnull=True)
+    
+    # Cek permission menggunakan method can_access_material
+    if not event.can_access_material(request.user):
+        messages.error(request, 'Anda tidak memiliki akses untuk mengunduh materi ini.')
+        return redirect('events:detail', event_id=event_id)
+    
+    # Pastikan file ada
+    if not event.material_file:
+        messages.error(request, 'Materi seminar belum tersedia.')
+        return redirect('events:detail', event_id=event_id)
+    
+    try:
+        # Return file response untuk download
+        response = FileResponse(
+            event.material_file.open('rb'),
+            as_attachment=True,
+            filename=event.material_file.name.split('/')[-1]
+        )
+        return response
+    except Exception as e:
+        messages.error(request, f'Terjadi kesalahan saat mengunduh file: {str(e)}')
+        return redirect('events:detail', event_id=event_id)
 
 
 @login_required
@@ -361,6 +424,8 @@ def validate_payment(request, registration_id):
             messages.success(request, f'Pembayaran dari {registration.user.name} telah disetujui.')
             return redirect('events:participants', event_id=registration.event.id)
         elif action == 'reject':
+            from registrations.models import PaymentRejection
+            
             rejection_reason = request.POST.get('rejection_reason', '')
             if not rejection_reason:
                 messages.error(request, 'Alasan penolakan harus diisi.')
@@ -368,13 +433,21 @@ def validate_payment(request, registration_id):
                     'registration': registration
                 })
             
-            registration.payment_status = 'rejected'
-            registration.payment_validated_at = timezone.now()
-            registration.payment_validated_by = request.user
-            registration.payment_rejection_reason = rejection_reason
-            registration.save()
-            messages.success(request, f'Pembayaran dari {registration.user.name} telah ditolak.')
-            return redirect('events:participants', event_id=registration.event.id)
+            # Simpan history penolakan
+            PaymentRejection.objects.create(
+                event=registration.event,
+                user=registration.user,
+                rejection_reason=rejection_reason,
+                rejected_by=request.user
+            )
+            
+            # Hapus registration (user tidak terdaftar lagi dan bisa daftar ulang)
+            user_name = registration.user.name
+            event_id = registration.event.id
+            registration.delete()
+            
+            messages.success(request, f'Pembayaran dari {user_name} telah ditolak. User dapat mendaftar ulang.')
+            return redirect('events:participants', event_id=event_id)
     
     # Jika action reject tapi belum ada alasan, tampilkan form reject
     if request.GET.get('action') == 'reject':

@@ -35,5 +35,8 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('chatbot/', views.chatbot, name='chatbot'),
     path('chatbot/api/', views.chatbot_api, name='chatbot_api'),
+    
+    # Download Material
+    path('material/<int:event_id>/download/', views.download_material, name='download_material'),
 ]
 
