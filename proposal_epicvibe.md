@@ -295,19 +295,28 @@ Arsitektur **EPICVIBE ORGANIZER** dirancang dengan prinsip cloud-native, high av
 ### 5.1 Komponen Arsitektur
 
 **Layer 1: Client Layer**
-- Web Application (Next.js) - dihosting di AWS Amplify
-- Mobile Web (Responsive Design)
-- API Clients untuk integrasi pihak ketiga
+- Web Application (Django Templates + Bootstrap + TailwindCSS) - responsive design
+- Mobile Web (Mobile-First Design)
+- Browser-based interface (tidak perlu install aplikasi)
 
-**Layer 2: Application Layer**
+**Layer 2: Application Layer (Development)**
+- Django Development Server - local development
+- Django WSGI Application - production ready
+- Template Engine - server-side rendering
+- Middleware - session management, role-based access control
+
+**Layer 2: Application Layer (Production - Rencana)**
 - Application Load Balancer (ALB) - distribusi traffic
 - EC2 Auto Scaling Group - backend servers
-- ECS Cluster - containerized services
-- API Gateway - entry point untuk API requests
+- ECS Cluster - containerized services (rencana)
 
-**Layer 3: Data Layer**
+**Layer 3: Data Layer (Development)**
+- SQLite3 Database - local development database
+- Local File Storage (/media/) - untuk upload files
+
+**Layer 3: Data Layer (Production - Rencana)**
 - Amazon RDS (PostgreSQL) - primary database dengan Multi-AZ
-- Amazon ElastiCache (Redis) - caching layer
+- Amazon ElastiCache (Redis) - caching layer (rencana)
 - Amazon S3 - object storage untuk files dan media
 
 **Layer 4: Security Layer**
@@ -321,24 +330,369 @@ Arsitektur **EPICVIBE ORGANIZER** dirancang dengan prinsip cloud-native, high av
 - CloudWatch Alarms - automated alerting
 - AWS Systems Manager - configuration management
 
-### 5.2 Data Flow
+### 5.2 User Flow Diagram
+
+Berikut adalah alur lengkap pengguna dalam sistem **EPICVIBE ORGANIZER**:
+
+#### **Flow 1: User Registration & Verification**
+
+```
+[PUBLIC] → Buka Halaman Register
+    ↓
+Pilih Tipe Akun:
+    - User (Peserta)
+    - Event Organizer
+    ↓
+Isi Form Registrasi:
+    - Nama Lengkap
+    - Email (unique validation)
+    - No. Handphone
+    - Alamat
+    - Pendidikan Terakhir
+    - Password (min 8 karakter: huruf besar, kecil, angka, karakter spesial)
+    ↓
+[SISTEM] Validasi:
+    - Email belum terdaftar?
+    - Password sesuai kriteria?
+    ↓
+Jika Valid:
+    - Hash password (bcrypt)
+    - Generate OTP 6 digit / Link Aktivasi
+    - Set expired: 5 menit
+    - Simpan ke database (status: unverified)
+    - Kirim Email Verifikasi
+    ↓
+[USER] → Cek Email
+    ↓
+Opsi A: Klik Link Aktivasi
+    ↓
+[SISTEM] → Validasi Token & Expired Time
+    ↓
+Jika Valid → Update email_verified_at = NOW()
+Jika Invalid/Expired → Tampilkan Error
+    ↓
+[USER] → Bisa Login
+
+Opsi B: Input OTP
+    ↓
+[SISTEM] → Validasi OTP & Expired Time (5 menit)
+    ↓
+Jika Valid → Update email_verified_at = NOW()
+Jika Invalid/Expired → Tampilkan Error
+    ↓
+[USER] → Bisa Login
+```
+
+#### **Flow 2: Login (Semua Role)**
+
+```
+[USER/ADMIN/EVENT_ORGANIZER] → Buka Halaman Login
+    ↓
+Input Email & Password
+    ↓
+[SISTEM] Validasi:
+    - Email terdaftar?
+    - Password cocok?
+    - Untuk USER: email_verified_at != NULL?
+    ↓
+Jika Valid:
+    - Create Session
+    - Set last_activity = NOW()
+    - Set session timeout: 5 menit
+    ↓
+Redirect berdasarkan Role:
+    - USER → Dashboard User
+    - ADMIN → Dashboard Admin
+    - EVENT_ORGANIZER → Dashboard Event Organizer
+    ↓
+[Middleware] → Setiap Request:
+    - Cek session valid
+    - Cek last_activity
+    - Jika (NOW() - last_activity) > 5 menit:
+        → Destroy session
+        → Redirect ke login (Session expired)
+    - Jika aktif:
+        → Update last_activity = NOW()
+```
+
+#### **Flow 3: Event Creation (Admin/Event Organizer)**
+
+```
+[ADMIN/EVENT_ORGANIZER] → Login
+    ↓
+Menu: "Tambah Kegiatan"
+    ↓
+Isi Form Event:
+    - Judul Kegiatan
+    - Kategori (Seminar/Konser)
+    - Deskripsi
+    - Tanggal & Waktu Kegiatan
+    - Lokasi (Offline/Online/Hybrid)
+    - Zoom Link (jika Online/Hybrid)
+    - Harga Tiket (opsional, jika gratis kosongkan)
+    - Nomor Rekening & Nama Bank (jika berbayar)
+    - Upload Flyer
+    - Upload Template Sertifikat (opsional)
+    - Upload Materi Seminar (opsional, untuk Seminar)
+    ↓
+[SISTEM] Validasi:
+    - Tanggal Kegiatan >= (TODAY + 3 hari)? → H-3 Rule
+    - File flyer valid (ext, size)?
+    - Template sertifikat valid (jika ada)?
+    ↓
+Jika Valid:
+    - Upload file flyer → /media/flyers/
+    - Upload template sertifikat → /media/certificate_templates/
+    - Upload materi → /media/event_materials/
+    - Set registration_closed_at = event_date + event_time
+    - Status: published (bisa diakses publik)
+    - Simpan ke database
+    ↓
+Berhasil → Redirect ke Daftar Kegiatan
+```
+
+#### **Flow 4: Event Registration (User) - Event Gratis**
+
+```
+[USER] → Login
+    ↓
+Menu: "Katalog Kegiatan"
+    ↓
+[SISTEM] → Tampilkan Kegiatan:
+    - Default: Urut berdasarkan (event_date ASC, event_time ASC)
+    - Filter: Search (title, description, location)
+    - Filter: Sort (Terbaru, Terlama, Peserta Terbanyak)
+    - Filter: Kategori (Seminar/Konser)
+    - Hanya tampilkan: status = 'published'
+    ↓
+[USER] → Pilih Kegiatan (Event Gratis)
+    ↓
+Klik "Daftar Kegiatan"
+    ↓
+[SISTEM] Validasi:
+    - Apakah NOW() < registration_closed_at? → Deadline check
+    - Apakah user sudah pernah daftar? → UNIQUE(event_id, user_id)
+    ↓
+Jika Valid:
+    - Generate Token 10 digit (random angka, UNIQUE)
+    - Simpan ke event_registrations:
+        * event_id, user_id, token
+        * status = 'registered'
+        * payment_status = 'not_required'
+        * token_sent_at = NOW()
+    - Kirim Email ke User dengan Token
+    ↓
+Berhasil → User terdaftar, status: Registered
+```
+
+#### **Flow 5: Event Registration (User) - Event Berbayar**
+
+```
+[USER] → Login
+    ↓
+Pilih Kegiatan (Event Berbayar)
+    ↓
+Klik "Daftar Kegiatan"
+    ↓
+[SISTEM] Validasi:
+    - Apakah NOW() < registration_closed_at?
+    - Apakah user sudah pernah daftar?
+    - Cek jumlah penolakan pembayaran (max 3x):
+        → Jika rejection_count >= 3: TOLAK
+    ↓
+Jika Valid:
+    - Generate Token 10 digit
+    - Simpan ke event_registrations:
+        * status = 'registered'
+        * payment_status = 'pending'
+    - Kirim Email dengan Token & Info Pembayaran
+    ↓
+[USER] → Upload Bukti Pembayaran
+    ↓
+[SISTEM]:
+    - Simpan payment_proof
+    - payment_status = 'pending'
+    ↓
+[EVENT_ORGANIZER] → Review Pembayaran
+    ↓
+Opsi A: Approve
+    ↓
+[SISTEM]:
+    - payment_status = 'approved'
+    - payment_validated_at = NOW()
+    - payment_validated_by = organizer
+    ↓
+[USER] → Terima Notifikasi: Pembayaran Disetujui
+
+Opsi B: Reject
+    ↓
+[EVENT_ORGANIZER] → Input Alasan Penolakan
+    ↓
+[SISTEM]:
+    - Simpan ke PaymentRejection (history)
+    - Hapus registration (user bisa daftar ulang)
+    - Kirim Email: Alasan Penolakan
+    ↓
+[USER] → Terima Notifikasi: Pembayaran Ditolak
+    ↓
+[USER] → Bisa Daftar Ulang (maksimal 3x rejection)
+```
+
+#### **Flow 6: Attendance & Certificate (User)**
+
+```
+[USER] → Login
+    ↓
+Menu: "Riwayat Kegiatan"
+    ↓
+[USER] → Pilih Kegiatan (status = 'registered')
+    ↓
+[SISTEM] Cek:
+    - Apakah tanggal sekarang >= event_date?
+    - Apakah waktu sekarang >= event_time?
+    - Apakah payment_status = 'approved' (untuk event berbayar)?
+    ↓
+Jika SUDAH WAKTU & VALID:
+    - Tombol "Isi Daftar Hadir" = AKTIF
+Jika BELUM WAKTU:
+    - Tombol "Isi Daftar Hadir" = DISABLED
+    ↓
+[USER] → Klik "Isi Daftar Hadir"
+    ↓
+Input Token 10 digit
+    ↓
+[SISTEM] Validasi:
+    - Token cocok dengan token di event_registrations?
+    - Token belum digunakan? (status masih 'registered'?)
+    ↓
+Jika Valid:
+    - Update event_registrations:
+        * status = 'attended'
+        * attendance_at = NOW()
+    - Generate Sertifikat PDF (jika ada template)
+    - Simpan sertifikat ke tabel certificates
+    - Kirim Email Sertifikat ke User
+    ↓
+Berhasil → User bisa download sertifikat
+```
+
+#### **Flow 7: Report Event (User)**
+
+```
+[USER] → Login
+    ↓
+Menu: "Laporkan Kegiatan" (di detail event)
+    ↓
+Isi Form Report:
+    - Judul Laporan
+    - Deskripsi Masalah
+    ↓
+[SISTEM]:
+    - Simpan ke ReportEvent
+    - Status: pending
+    - Kirim notifikasi ke Admin
+    ↓
+[ADMIN] → Review Report
+    ↓
+Opsi A: Approve
+    ↓
+[SISTEM]:
+    - Status: approved
+    - Admin bisa tindak lanjuti
+    ↓
+[USER] → Terima Notifikasi: Laporan Disetujui
+
+Opsi B: Reject
+    ↓
+[ADMIN] → Input Alasan Penolakan
+    ↓
+[SISTEM]:
+    - Status: rejected
+    - Kirim Email: Alasan Penolakan
+    ↓
+[USER] → Terima Notifikasi: Laporan Ditolak
+```
+
+#### **Flow 8: News System (Public/User)**
+
+```
+[PUBLIC/USER] → Buka Halaman Berita
+    ↓
+[SISTEM] → Tampilkan Berita:
+    - Urut berdasarkan: created_at DESC
+    - Hanya tampilkan: status = 'published'
+    ↓
+[USER] → Pilih Berita
+    ↓
+Baca Berita & Komentar
+    ↓
+[USER] → Input Komentar (jika login)
+    ↓
+[SISTEM]:
+    - Simpan komentar
+    - Tampilkan di halaman berita
+```
+
+#### **Flow 9: Chatbot "Dexy" (User)**
+
+```
+[USER] → Buka Halaman Chatbot
+    ↓
+Input Pertanyaan:
+    - Tentang event, registrasi, token, sertifikat, dll
+    ↓
+[SISTEM]:
+    - Kirim ke OpenAI API
+    - Generate response berdasarkan konteks sistem
+    - Tampilkan response ke user
+    ↓
+[USER] → Terima Jawaban dari Chatbot
+```
+
+#### **Flow 10: Material Download (User - Seminar Only)**
+
+```
+[USER] → Login
+    ↓
+Menu: "Riwayat Kegiatan"
+    ↓
+Pilih Kegiatan (Seminar, status = 'attended')
+    ↓
+[SISTEM] Cek:
+    - Apakah event.category = 'seminar'?
+    - Apakah user status = 'attended'?
+    - Apakah material_file ada?
+    ↓
+Jika Valid:
+    - Tampilkan tombol "Download Materi"
+    ↓
+[USER] → Klik "Download Materi"
+    ↓
+[SISTEM]:
+    - Generate download link
+    - Track download activity
+    ↓
+[USER] → Download File Materi
+```
+
+### 5.3 Data Flow (Technical)
 
 1. **User Request Flow:**
-   - User mengakses aplikasi melalui CloudFront CDN
-   - Request diarahkan ke ALB yang mendistribusikan ke EC2/ECS instances
-   - Backend memproses request dan berkomunikasi dengan database
-   - Response dikembalikan ke user melalui CDN
+   - User mengakses aplikasi melalui browser
+   - Request diarahkan ke Django server
+   - Backend memproses request dan berkomunikasi dengan database (SQLite3/PostgreSQL)
+   - Response dikembalikan ke user melalui template rendering
 
 2. **File Upload Flow:**
-   - File diupload melalui API endpoint
-   - File disimpan ke S3 dengan presigned URLs
+   - File diupload melalui form
+   - File disimpan ke /media/ directory (development)
    - Metadata file disimpan di database
-   - CDN digunakan untuk delivery file yang dioptimasi
+   - Untuk production: File akan disimpan ke S3 dengan presigned URLs
 
-3. **Background Processing:**
-   - Task berat (email sending, report generation) diqueue ke Celery
-   - Redis sebagai message broker
-   - Worker processes memproses task secara asynchronous
+3. **Email Processing:**
+   - Email dikirim melalui Django SMTP backend
+   - Gmail SMTP untuk development
+   - Async email sending (future enhancement dengan Celery)
 
 ---
 
