@@ -202,7 +202,7 @@ Ruang lingkup pekerjaan dalam pengembangan **EPICVIBE ORGANIZER** mencakup selur
 
 ## 4. TECH STACK
 
-**EPICVIBE ORGANIZER** dibangun menggunakan teknologi modern dan teruji yang dipilih berdasarkan pertimbangan performa, skalabilitas, dan maintainability. Berikut adalah detail lengkap tech stack yang akan digunakan:
+**EPICVIBE ORGANIZER** dibangun menggunakan teknologi modern dan teruji yang dipilih berdasarkan pertimbangan performa, skalabilitas, dan maintainability. Berikut adalah detail lengkap tech stack yang digunakan:
 
 ### 4.1 Backend Technology
 
@@ -210,125 +210,467 @@ Ruang lingkup pekerjaan dalam pengembangan **EPICVIBE ORGANIZER** mencakup selur
 |----------|-----------|-------|------------|
 | **Framework** | Django | 4.2+ | Web framework Python yang powerful dan scalable |
 | **Language** | Python | 3.8+ | Bahasa pemrograman modern dengan ekosistem yang kaya |
-| **Database (Development)** | SQLite3 | - | Database ringan untuk development dan testing |
+| **WSGI Server** | Gunicorn | 21.2+ | Production WSGI HTTP Server untuk deployment |
+| **ASGI Server** | Uvicorn | 0.23+ | ASGI server untuk async support (optional) |
+| **Database (Development)** | SQLite3 | 3.x | Database ringan untuk development dan testing |
 | **Database (Production)** | PostgreSQL | 15+ | Relational database management system yang robust untuk production |
-| **Authentication** | Django Session Auth | - | Sistem autentikasi built-in Django dengan session management |
-| **Form Handling** | Django Crispy Forms | 2.0+ | Library untuk form rendering dengan Bootstrap |
-| **File Processing** | Pillow | 10.0+ | Library untuk image processing |
+| **ORM** | Django ORM | 4.2+ | Object-Relational Mapping built-in Django |
+| **Database Migrations** | Django Migrations | 4.2+ | Version control untuk database schema |
+| **Authentication** | Django Session Auth | 4.2+ | Sistem autentikasi built-in Django dengan session management |
+| **Authorization** | Django Permissions | 4.2+ | Role-based access control (RBAC) |
+| **Form Handling** | Django Forms | 4.2+ | Form validation dan processing |
+| **Form Rendering** | Django Crispy Forms | 2.0+ | Library untuk form rendering dengan Bootstrap |
+| **File Processing** | Pillow (PIL) | 10.0+ | Library untuk image processing dan manipulation |
 | **PDF Generation** | ReportLab | 4.0+ | Library untuk generate sertifikat PDF |
-| **Email Service** | Django SMTP | - | Email backend untuk notifikasi dan verifikasi |
-| **AI Integration** | OpenAI API | 1.0+ | Integrasi dengan OpenAI untuk chatbot cerdas |
+| **Email Service** | Django SMTP | 4.2+ | Email backend untuk notifikasi dan verifikasi |
+| **Email Backend** | Gmail SMTP | - | SMTP server untuk email delivery |
+| **File Storage** | Django FileField | 4.2+ | Local file storage (dev) / S3 (production) |
+| **Caching** | Django Cache Framework | 4.2+ | Caching framework dengan Redis backend |
+| **Session Storage** | Django Sessions | 4.2+ | Session management dengan Redis |
+| **AI Integration** | OpenAI API | 1.0+ | Integrasi dengan OpenAI GPT untuk chatbot cerdas |
+| **HTTP Client** | requests | 2.31+ | HTTP library untuk API calls |
+| **Data Validation** | Django Validators | 4.2+ | Built-in validators untuk form fields |
 
 ### 4.2 Frontend Technology
 
 | Komponen | Teknologi | Versi | Keterangan |
 |----------|-----------|-------|------------|
 | **Template Engine** | Django Templates | 4.2+ | Server-side rendering dengan template inheritance |
+| **Template Language** | Jinja2 (via Django) | 3.1+ | Template syntax untuk dynamic content |
 | **CSS Framework** | Bootstrap | 5.3+ | Responsive CSS framework untuk UI components |
 | **Utility CSS** | TailwindCSS | 3.4+ | Utility-first CSS framework untuk rapid UI development |
+| **CSS Preprocessor** | Native CSS | - | Custom CSS dengan CSS Variables |
 | **Icons** | Bootstrap Icons | 1.10+ | Icon library yang konsisten dengan Bootstrap |
 | **Fonts** | Google Fonts | - | Poppins, Montserrat, Inter untuk typography |
-| **JavaScript** | Vanilla JS | - | Native JavaScript untuk interaktivitas |
+| **JavaScript** | Vanilla JS (ES6+) | - | Native JavaScript untuk interaktivitas tanpa framework |
+| **DOM Manipulation** | Native JS | - | QuerySelector, Event Listeners |
+| **AJAX/Fetch** | Fetch API | - | Modern API untuk asynchronous requests |
 | **Responsive Design** | Mobile-First | - | Design yang optimal untuk semua perangkat |
+| **Browser Support** | Modern Browsers | - | Chrome, Firefox, Safari, Edge (latest 2 versions) |
 
-### 4.3 Cloud Infrastructure (AWS) - *Rencana Production Deployment*
+### 4.3 Cloud Infrastructure (AWS) - *Production Deployment*
 
-| Layanan | Keterangan | Penggunaan |
-|---------|------------|------------|
-| **Amazon EC2** | Elastic Compute Cloud | Server instances untuk aplikasi backend |
-| **Amazon RDS** | Relational Database Service | Managed PostgreSQL database dengan Multi-AZ |
-| **Amazon S3** | Simple Storage Service | Storage untuk file, media, dan static assets |
-| **Amazon CloudFront** | Content Delivery Network | CDN untuk distribusi konten global |
-| **Amazon Route 53** | DNS Service | Domain name system management |
-| **AWS Certificate Manager (ACM)** | SSL/TLS Certificates | Managed SSL certificates untuk HTTPS |
-| **Application Load Balancer (ALB)** | Load Balancing | Distribusi traffic dan health checks |
-| **Amazon CloudWatch** | Monitoring & Logging | Monitoring, logging, dan alerting |
-| **AWS Auto Scaling** | Auto Scaling | Automatic scaling berdasarkan demand |
-| **Amazon VPC** | Virtual Private Cloud | Isolated network environment untuk keamanan |
-| **AWS WAF** | Web Application Firewall | Proteksi terhadap serangan web |
+#### 4.3.1 Compute & Container Services
 
-**Catatan**: Saat ini sistem masih dalam fase development dengan deployment lokal. Cloud infrastructure akan diimplementasikan pada fase production deployment.
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **Amazon ECS** | Elastic Container Service | Container orchestration untuk Django application | ✅ Terraform Ready |
+| **ECS Fargate** | Serverless Container Platform | Menjalankan containers tanpa manage servers | ✅ Terraform Ready |
+| **Amazon ECR** | Elastic Container Registry | Docker image registry untuk container images | ✅ Terraform Ready |
+| **Application Load Balancer (ALB)** | Load Balancing | Distribusi traffic dan health checks ke ECS tasks | ✅ Terraform Ready |
+| **AWS Auto Scaling** | Auto Scaling | Automatic scaling ECS tasks berdasarkan demand | ✅ Terraform Ready |
 
-### 4.4 DevOps & Infrastructure as Code - *Rencana Production*
+#### 4.3.2 Storage & Content Delivery
 
-| Tool | Keterangan | Penggunaan |
-|------|------------|------------|
-| **Docker** | Containerization | Container untuk aplikasi dan dependencies (rencana) |
-| **Amazon ECS** | Elastic Container Service | Container orchestration dan management (rencana) |
-| **GitHub Actions** | CI/CD Pipeline | Automated testing, building, dan deployment (rencana) |
-| **Terraform** | Infrastructure as Code | Provisioning dan management infrastruktur AWS (rencana) |
-| **Version Control** | Git | Source code management dan versioning |
-| **Environment Config** | python-decouple | Management environment variables dan secrets |
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **Amazon S3** | Simple Storage Service | Storage untuk file, media, dan static assets | ✅ Terraform Ready |
+| **S3 Lifecycle Policies** | Automated Transitions | Cost optimization dengan lifecycle rules | ✅ Terraform Ready |
+| **S3 Versioning** | Object Versioning | File versioning untuk recovery | ✅ Terraform Ready |
+| **Amazon CloudFront** | Content Delivery Network | CDN untuk distribusi konten global | ✅ Terraform Ready |
+| **CloudFront Edge Locations** | Global Edge Network | Low latency content delivery worldwide | ✅ Terraform Ready |
+| **AWS Amplify** | Static Web Hosting | Hosting static assets (CSS, JS, Images) dengan CI/CD | ✅ Terraform Ready |
 
-### 4.5 Artificial Intelligence Integration
+#### 4.3.3 Database & Caching
 
-| Komponen | Teknologi | Keterangan |
-|----------|-----------|------------|
-| **AI Service** | OpenAI API | Integrasi dengan OpenAI GPT untuk chatbot cerdas |
-| **Chatbot** | Custom Django View | Chatbot "Dexy" dengan integrasi OpenAI untuk menjawab pertanyaan pengguna |
-| **Natural Language Processing** | OpenAI GPT Models | Pemrosesan bahasa alami untuk memahami konteks pertanyaan |
-| **Future Enhancement** | LSTM / Recommendation System | Rencana pengembangan untuk next word prediction dan event recommendation (opsional) |
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **Amazon RDS** | Relational Database Service | Managed PostgreSQL database dengan Multi-AZ | ✅ Terraform Ready |
+| **RDS Multi-AZ** | High Availability | Automatic failover untuk database redundancy | ✅ Terraform Ready |
+| **RDS Automated Backups** | Database Backups | Daily automated backups dengan 7-day retention | ✅ Terraform Ready |
+| **RDS Read Replicas** | Read Scaling | Scaling read operations dengan read replicas | ✅ Terraform Ready |
+| **Amazon ElastiCache** | Managed Caching | Redis cluster untuk session dan query caching | ✅ Terraform Ready |
+| **ElastiCache Redis** | In-Memory Data Store | Fast caching layer | ✅ Terraform Ready |
 
-### 4.6 Development Tools & Libraries
+#### 4.3.4 Networking & Security
 
-- **Version Control**: Git dengan GitHub
-- **Package Management**: pip dengan requirements.txt
-- **Data Processing**: pandas, openpyxl untuk export data
-- **Image Processing**: Pillow untuk upload dan processing gambar
-- **PDF Generation**: ReportLab untuk generate sertifikat
-- **Environment Management**: python-decouple untuk environment variables
-- **Testing**: Django Test Framework (built-in)
-- **Documentation**: Markdown files dan inline comments
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **Amazon VPC** | Virtual Private Cloud | Isolated network environment untuk keamanan | ✅ Terraform Ready |
+| **VPC Subnets** | Network Segmentation | Public dan private subnets untuk isolation | ✅ Terraform Ready |
+| **Internet Gateway** | Public Internet Access | Gateway untuk public subnet access | ✅ Terraform Ready |
+| **NAT Gateway** | Outbound Internet | NAT untuk private subnet outbound traffic | ✅ Terraform Ready |
+| **Security Groups** | Virtual Firewall | Network-level security rules | ✅ Terraform Ready |
+| **AWS WAF** | Web Application Firewall | Proteksi terhadap serangan web (DDoS, SQL injection, XSS) | ✅ Terraform Ready |
+| **AWS Shield** | DDoS Protection | Managed DDoS protection | ✅ Terraform Ready |
+
+#### 4.3.5 Domain & SSL
+
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **Amazon Route 53** | DNS Service | Domain name system management | 🔄 Manual Setup |
+| **AWS Certificate Manager (ACM)** | SSL/TLS Certificates | Managed SSL certificates untuk HTTPS | ✅ Terraform Ready |
+| **ACM Certificate Validation** | Domain Validation | Automatic domain validation | ✅ Terraform Ready |
+
+#### 4.3.6 Monitoring & Management
+
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **Amazon CloudWatch** | Monitoring & Logging | Metrics, logs, dan alerting | ✅ Terraform Ready |
+| **CloudWatch Logs** | Application Logging | Centralized logging untuk applications | ✅ Terraform Ready |
+| **CloudWatch Metrics** | Performance Metrics | CPU, Memory, Request count, Error rate | ✅ Terraform Ready |
+| **CloudWatch Alarms** | Automated Alerting | Alert notifications untuk critical metrics | ✅ Terraform Ready |
+| **CloudWatch Dashboards** | Custom Dashboards | Visual monitoring dashboards | ✅ Terraform Ready |
+| **AWS Systems Manager** | Configuration Management | Parameter Store, Session Manager | ✅ Terraform Ready |
+| **AWS X-Ray** | Distributed Tracing | Request tracing untuk debugging (optional) | 🔄 Optional |
+
+#### 4.3.7 Security & Secrets
+
+| Layanan | Keterangan | Penggunaan | Status |
+|---------|------------|------------|--------|
+| **AWS Secrets Manager** | Secrets Management | Secure storage untuk credentials dan API keys | ✅ Terraform Ready |
+| **AWS IAM** | Identity & Access Management | Access control dan permissions | ✅ Terraform Ready |
+| **IAM Roles** | Service Roles | Roles untuk ECS, RDS, S3 access | ✅ Terraform Ready |
+| **IAM Policies** | Permission Policies | Fine-grained access control | ✅ Terraform Ready |
+| **AWS KMS** | Key Management Service | Encryption keys management (optional) | 🔄 Optional |
+
+### 4.4 DevOps & Infrastructure as Code
+
+| Tool | Versi | Keterangan | Status |
+|------|-------|------------|--------|
+| **Terraform** | 1.0+ | Infrastructure as Code untuk provisioning AWS resources | ✅ Implemented |
+| **Terraform AWS Provider** | 5.0+ | AWS provider untuk Terraform | ✅ Implemented |
+| **Terraform Modules** | - | Modular infrastructure code (VPC, RDS, S3, ECS, ALB, CloudFront, Amplify, ElastiCache) | ✅ Implemented |
+| **Terraform State** | S3 Backend | Remote state storage di S3 dengan encryption | ✅ Implemented |
+| **Docker** | 24.0+ | Containerization untuk aplikasi dan dependencies | ✅ Ready |
+| **Docker Compose** | 2.0+ | Local development dengan containers | ✅ Ready |
+| **GitHub Actions** | - | CI/CD Pipeline untuk automated testing, building, dan deployment | 🔄 Planned |
+| **GitHub Actions Workflows** | - | Automated workflows untuk Terraform dan Docker builds | 🔄 Planned |
+| **Version Control** | Git 2.0+ | Source code management dan versioning | ✅ Active |
+| **GitHub** | - | Git repository hosting | ✅ Active |
+| **Environment Config** | python-decouple | Management environment variables dan secrets | ✅ Implemented |
+| **AWS CLI** | 2.0+ | Command-line interface untuk AWS services | ✅ Required |
+| **AWS IAM** | - | Access management untuk Terraform execution | ✅ Required |
+
+### 4.5 AWS Amplify Integration
+
+| Komponen | Teknologi | Keterangan | Status |
+|----------|-----------|------------|--------|
+| **AWS Amplify** | Amplify Console | Static web hosting dengan CI/CD | ✅ Terraform Ready |
+| **Amplify App** | Amplify Application | Main application configuration | ✅ Terraform Ready |
+| **Amplify Branch** | Branch Deployments | Branch-based deployments (main, staging) | ✅ Terraform Ready |
+| **Amplify Build** | Build Pipeline | Automated build process untuk static assets | ✅ Terraform Ready |
+| **Amplify Domain** | Custom Domain | Custom domain dengan SSL certificate | ✅ Terraform Ready |
+| **Amplify Environment Variables** | Config Management | Secure environment variables | ✅ Terraform Ready |
+| **GitHub Integration** | Repository Connection | Automatic deployments dari Git push | ✅ Terraform Ready |
+| **Build Specification** | buildspec.yml | Build configuration untuk collectstatic | ✅ Terraform Ready |
+
+### 4.6 Artificial Intelligence Integration
+
+| Komponen | Teknologi | Versi | Keterangan |
+|----------|-----------|-------|------------|
+| **AI Service** | OpenAI API | 1.0+ | Integrasi dengan OpenAI GPT untuk chatbot cerdas |
+| **OpenAI SDK** | openai-python | 1.0+ | Python SDK untuk OpenAI API |
+| **Chatbot** | Custom Django View | - | Chatbot "Dexy" dengan integrasi OpenAI |
+| **Natural Language Processing** | OpenAI GPT Models | GPT-3.5/GPT-4 | Pemrosesan bahasa alami untuk memahami konteks pertanyaan |
+| **API Integration** | REST API | - | HTTP requests ke OpenAI API endpoints |
+| **Response Caching** | Django Cache | - | Caching responses untuk cost optimization |
+| **Future Enhancement** | LSTM / Recommendation System | - | Rencana pengembangan untuk next word prediction dan event recommendation (opsional) |
+
+### 4.7 Development Tools & Libraries
+
+| Kategori | Tool/Library | Versi | Keterangan |
+|----------|--------------|-------|------------|
+| **Version Control** | Git | 2.0+ | Source code management |
+| **Repository Hosting** | GitHub | - | Git repository hosting |
+| **Package Management** | pip | 23.0+ | Python package manager |
+| **Dependency Management** | requirements.txt | - | Python dependencies file |
+| **Data Processing** | pandas | 2.0+ | Data manipulation dan analysis |
+| **Excel Processing** | openpyxl | 3.1+ | Excel file reading/writing |
+| **Image Processing** | Pillow (PIL) | 10.0+ | Image manipulation |
+| **PDF Generation** | ReportLab | 4.0+ | PDF certificate generation |
+| **Environment Management** | python-decouple | 3.8+ | Environment variables management |
+| **Testing Framework** | Django Test Framework | 4.2+ | Built-in testing framework |
+| **Code Quality** | flake8 | 6.0+ | Linting untuk code quality (optional) |
+| **Documentation** | Markdown | - | Documentation files |
+| **API Documentation** | Django Admin Docs | 4.2+ | Built-in API documentation |
+
+### 4.8 Technology Stack Summary
+
+**Backend Stack:**
+- **Framework**: Django 4.2+
+- **Language**: Python 3.8+
+- **Database**: PostgreSQL 15+ (Production), SQLite3 (Development)
+- **Cache**: Redis (ElastiCache)
+- **Storage**: Amazon S3
+- **Server**: Gunicorn + Nginx (optional)
+
+**Frontend Stack:**
+- **Templates**: Django Templates
+- **CSS**: Bootstrap 5.3+ + TailwindCSS 3.4+
+- **JavaScript**: Vanilla JS (ES6+)
+- **Icons**: Bootstrap Icons
+- **Fonts**: Google Fonts
+
+**Infrastructure Stack:**
+- **Container**: Docker + Amazon ECS (Fargate)
+- **Load Balancer**: Application Load Balancer (ALB)
+- **CDN**: CloudFront + AWS Amplify
+- **Database**: Amazon RDS (PostgreSQL Multi-AZ)
+- **Cache**: Amazon ElastiCache (Redis)
+- **Storage**: Amazon S3
+- **Networking**: Amazon VPC
+- **Monitoring**: CloudWatch
+- **IaC**: Terraform
+
+**DevOps Stack:**
+- **CI/CD**: GitHub Actions (planned)
+- **IaC**: Terraform 1.0+
+- **Container Registry**: Amazon ECR
+- **Version Control**: Git + GitHub
+- **Secrets**: AWS Secrets Manager
+
+**Status Legend:**
+- ✅ **Implemented/Ready**: Sudah diimplementasikan atau siap digunakan
+- 🔄 **Planned**: Rencana implementasi
+- ⏸️ **Optional**: Opsional untuk implementasi
 
 ---
 
 ## 5. DIAGRAM ARSITEKTUR SISTEM
 
-Arsitektur **EPICVIBE ORGANIZER** dirancang dengan prinsip cloud-native, high availability, dan skalabilitas. Berikut adalah diagram arsitektur sistem secara keseluruhan:
+Arsitektur **EPICVIBE ORGANIZER** dirancang dengan prinsip cloud-native, high availability, dan skalabilitas menggunakan **AWS dengan Terraform untuk Infrastructure as Code** dan **AWS Amplify untuk static assets hosting**. Berikut adalah diagram arsitektur sistem secara keseluruhan:
 
-<div style="text-align: center; margin: 40px 0;">
-    <img src="assets/architecture-diagram.png" alt="Diagram Arsitektur EPICVIBE ORGANIZER" style="max-width: 100%; height: auto;">
-</div>
+### 5.1 Arsitektur AWS dengan AWS Amplify
 
-*Gambar 1: Arsitektur Sistem EPICVIBE ORGANIZER*
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        INTERNET / USERS                          │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    AWS CLOUDFRONT CDN                            │
+│  - Global Content Delivery                                      │
+│  - SSL/TLS Termination                                          │
+│  - DDoS Protection                                              │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+┌──────────────────────────┐  ┌──────────────────────────┐
+│   AWS AMPLIFY            │  │   APPLICATION LOAD      │
+│   (Static Assets)        │  │   BALANCER (ALB)        │
+│                          │  │                          │
+│  - Static Files (CSS/JS) │  │  - Health Checks         │
+│  - Images & Assets       │  │  - SSL Termination       │
+│  - Custom Domain         │  │  - Request Routing       │
+│  - CI/CD Pipeline        │  │                          │
+│  - Auto Deployments      │  │                          │
+└──────────────────────────┘  └────────────┬─────────────┘
+                                            │
+                            ┌───────────────┴───────────────┐
+                            │                               │
+                            ▼                               ▼
+                ┌───────────────────────┐      ┌───────────────────────┐
+                │   AWS ECS CLUSTER     │      │   AWS ECS CLUSTER     │
+                │   (Production)        │      │   (Staging)            │
+                │                       │      │                       │
+                │  - Django App (Fargate)│      │  - Django App         │
+                │  - Auto Scaling       │      │  - Auto Scaling       │
+                │  - Containerized      │      │  - Containerized      │
+                └───────────┬───────────┘      └───────────┬───────────┘
+                            │                               │
+                            └───────────────┬───────────────┘
+                                            │
+                            ┌───────────────┴───────────────┐
+                            │                               │
+                            ▼                               ▼
+                ┌───────────────────────┐      ┌───────────────────────┐
+                │   AMAZON RDS          │      │   AMAZON S3           │
+                │   (PostgreSQL)        │      │   (Media Storage)     │
+                │                       │      │                       │
+                │  - Multi-AZ           │      │  - Flyers              │
+                │  - Automated Backups  │      │  - Certificates        │
+                │  - Read Replicas      │      │  - Payment Proofs      │
+                └───────────────────────┘      │  - Event Materials     │
+                                                └───────────────────────┘
+                            │
+                            ▼
+                ┌───────────────────────┐
+                │   AMAZON ELASTICACHE   │
+                │   (Redis)             │
+                │                       │
+                │  - Session Cache       │
+                │  - Task Queue          │
+                └───────────────────────┘
+```
 
-### 5.1 Komponen Arsitektur
+*Gambar 1: Arsitektur AWS EPICVIBE ORGANIZER dengan AWS Amplify*
 
-**Layer 1: Client Layer**
-- Web Application (Django Templates + Bootstrap + TailwindCSS) - responsive design
-- Mobile Web (Mobile-First Design)
-- Browser-based interface (tidak perlu install aplikasi)
+### 5.2 Komponen Arsitektur Detail
 
-**Layer 2: Application Layer (Development)**
-- Django Development Server - local development
-- Django WSGI Application - production ready
-- Template Engine - server-side rendering
-- Middleware - session management, role-based access control
+#### **Layer 1: Client & CDN Layer**
 
-**Layer 2: Application Layer (Production - Rencana)**
-- Application Load Balancer (ALB) - distribusi traffic
-- EC2 Auto Scaling Group - backend servers
-- ECS Cluster - containerized services (rencana)
+**AWS CloudFront:**
+- Global Content Delivery Network (CDN)
+- SSL/TLS certificates dari AWS Certificate Manager
+- DDoS protection dan rate limiting
+- Caching untuk static assets dan API responses
+- Custom error pages
 
-**Layer 3: Data Layer (Development)**
-- SQLite3 Database - local development database
-- Local File Storage (/media/) - untuk upload files
+**AWS Amplify (Static Assets Hosting):**
+- **Purpose**: Hosting static files (CSS, JavaScript, Images, Fonts)
+- **Features**:
+  - Automatic deployments dari GitHub repository
+  - Custom domain dengan SSL certificate otomatis
+  - CI/CD pipeline untuk build static assets
+  - CDN integration dengan CloudFront
+  - Environment variables management
+  - Branch-based deployments (main, staging)
+- **Build Process**:
+  - Triggered by Git push
+  - Runs `python manage.py collectstatic --noinput`
+  - Deploys static files to CDN
+  - Automatic cache invalidation
 
-**Layer 3: Data Layer (Production - Rencana)**
-- Amazon RDS (PostgreSQL) - primary database dengan Multi-AZ
-- Amazon ElastiCache (Redis) - caching layer (rencana)
-- Amazon S3 - object storage untuk files dan media
+#### **Layer 2: Application Layer**
 
-**Layer 4: Security Layer**
-- AWS WAF - web application firewall
-- VPC dengan private subnets - network isolation
-- Security Groups - firewall rules
-- IAM Roles - access control
+**Application Load Balancer (ALB):**
+- Distribusi traffic ke ECS tasks
+- Health checks untuk ECS services
+- SSL/TLS termination
+- Path-based routing
+- Integration dengan AWS WAF untuk security
 
-**Layer 5: Monitoring & Management**
-- CloudWatch - monitoring dan logging
-- CloudWatch Alarms - automated alerting
-- AWS Systems Manager - configuration management
+**Amazon ECS (Elastic Container Service):**
+- **Launch Type**: Fargate (serverless containers)
+- **Configuration**:
+  - Auto Scaling berdasarkan CPU/Memory metrics
+  - Task definitions dengan Docker images
+  - Service discovery untuk internal communication
+  - Logging ke CloudWatch Logs
+  - Integration dengan ALB untuk load balancing
+- **Deployment**:
+  - Container registry: Amazon ECR
+  - Blue/Green deployments untuk zero downtime
+  - Rolling updates dengan health checks
+
+#### **Layer 3: Data Layer**
+
+**Amazon RDS (PostgreSQL):**
+- **Configuration**:
+  - Multi-AZ deployment untuk high availability
+  - Automated daily backups dengan 7-day retention
+  - Read replicas untuk scaling read operations
+  - Encryption at rest (AES-256)
+  - Encryption in transit (TLS)
+  - VPC security groups untuk network isolation
+- **Instance Type**: db.t3.medium (production), db.t3.micro (staging)
+
+**Amazon S3 (Object Storage):**
+- **Buckets**:
+  - `epicvibe-media-prod`: Flyers, certificates, payment proofs, event materials
+  - `epicvibe-static-backup`: Backup static files
+- **Features**:
+  - Lifecycle policies untuk cost optimization
+  - Versioning untuk file recovery
+  - Cross-region replication (optional)
+  - Presigned URLs untuk secure file access
+  - CloudFront integration untuk CDN
+
+**Amazon ElastiCache (Redis):**
+- **Purpose**: Caching dan session storage
+- **Configuration**:
+  - Redis cluster mode untuk high availability
+  - Automatic failover
+  - Encryption in transit
+  - VPC security groups
+
+#### **Layer 4: Security Layer**
+
+**VPC (Virtual Private Cloud):**
+- **Network Architecture**:
+  - Public subnets: ALB, NAT Gateway, AWS Amplify edge locations
+  - Private subnets: ECS tasks, RDS, ElastiCache
+  - Internet Gateway untuk public access
+  - NAT Gateway untuk outbound traffic dari private subnets
+- **Security Groups**:
+  - ALB Security Group: Allow HTTPS (443) from CloudFront
+  - ECS Security Group: Allow traffic from ALB only
+  - RDS Security Group: Allow traffic from ECS only
+  - ElastiCache Security Group: Allow traffic from ECS only
+
+**AWS WAF (Web Application Firewall):**
+- Protection terhadap common web exploits
+- Rate limiting untuk DDoS protection
+- IP whitelisting/blacklisting
+- SQL injection protection
+- XSS protection
+
+**IAM Roles & Policies:**
+- ECS Task Role: Access to S3, Secrets Manager
+- ECS Execution Role: Pull images from ECR, write to CloudWatch
+- Least privilege principle
+
+**AWS Secrets Manager:**
+- Secure storage untuk:
+  - Database credentials
+  - Django SECRET_KEY
+  - OpenAI API key
+  - Email SMTP credentials
+- Automatic rotation (optional)
+
+#### **Layer 5: Monitoring & Management**
+
+**Amazon CloudWatch:**
+- **Metrics**: CPU, Memory, Request count, Error rate
+- **Logs**: Application logs, access logs, error logs
+- **Alarms**: Automated alerting untuk critical metrics
+- **Dashboards**: Custom dashboards untuk monitoring
+
+**AWS Systems Manager:**
+- Parameter Store untuk configuration
+- Session Manager untuk secure access
+- Patch Manager untuk updates
+
+#### **Infrastructure as Code (Terraform)**
+
+**Terraform Configuration:**
+- **Modules**:
+  - VPC Module: Network infrastructure
+  - RDS Module: Database setup
+  - S3 Module: Object storage
+  - ECS Module: Container orchestration
+  - ALB Module: Load balancing
+  - CloudFront Module: CDN configuration
+  - **Amplify Module**: Static assets hosting
+  - ElastiCache Module: Caching layer
+  - Secrets Module: Secrets management
+  - CloudWatch Module: Monitoring setup
+- **State Management**: S3 backend dengan encryption
+- **Version Control**: Git-based workflow
+- **Automation**: GitHub Actions untuk CI/CD
+
+### 5.3 Data Flow (Production)
+
+1. **User Request Flow:**
+   - User mengakses aplikasi melalui CloudFront CDN
+   - Static assets (CSS, JS, images) → AWS Amplify → CloudFront
+   - Dynamic content → ALB → ECS Tasks (Django)
+   - Django memproses request dan berkomunikasi dengan RDS
+   - Media files → S3 dengan CloudFront CDN
+   - Response dikembalikan ke user melalui CloudFront
+
+2. **File Upload Flow:**
+   - File diupload melalui Django form
+   - Django upload ke S3 dengan presigned URLs
+   - Metadata file disimpan di RDS
+   - CloudFront digunakan untuk delivery file yang dioptimasi
+
+3. **Deployment Flow:**
+   - Developer push code ke GitHub
+   - GitHub Actions trigger Terraform (infrastructure changes)
+   - AWS Amplify build static assets (automatic)
+   - ECS service update dengan new Docker image
+   - ALB health checks verify new tasks
+   - Old tasks drained and terminated (zero downtime)
+
+4. **Caching Flow:**
+   - Session data → ElastiCache (Redis)
+   - Static assets → CloudFront edge locations
+   - Database queries → ElastiCache (optional query caching)
 
 ### 5.2 User Flow Diagram
 
