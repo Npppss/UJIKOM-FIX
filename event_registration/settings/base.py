@@ -1,20 +1,12 @@
 """
-Django settings for event_registration project.
-Uses environment-based configuration.
+Base Django settings for event_registration project.
+Shared settings across all environments.
 """
 import os
+from pathlib import Path
 from decouple import config
 
-# Determine environment from environment variable or default to development
-ENVIRONMENT = config('ENVIRONMENT', default='development').lower()
-
-# Import environment-specific settings
-if ENVIRONMENT == 'production':
-    from .settings.production import *
-elif ENVIRONMENT == 'staging':
-    from .settings.staging import *
-else:
-    from .settings.development import *
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Application definition
 INSTALLED_APPS = [
@@ -71,14 +63,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'event_registration.wsgi.application'
-
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -138,13 +122,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'novandrae7980@gmail.com'
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')  # App Password Gmail - Set in .env file
-DEFAULT_FROM_EMAIL = 'novandrae7980@gmail.com'
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='novandrae7980@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='novandrae7980@gmail.com')
 SITE_URL = config('SITE_URL', default='http://localhost:8000')
 
 # OpenAI Settings
-OPENAI_API_KEY = config('OPENAI_API_KEY', default='')  # Set in .env file - Get from https://platform.openai.com/api-keys
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
 # File Upload Settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
