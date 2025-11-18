@@ -8,3 +8,8 @@ python-decouple>=3.8
 reportlab>=4.0.0
 openai>=1.0.0
 
+# Staging/Production Dependencies
+django-redis>=5.2.0
+boto3>=1.28.0
+django-storages>=1.14.0
+

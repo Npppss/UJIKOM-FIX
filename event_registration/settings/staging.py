@@ -16,37 +16,61 @@ ALLOWED_HOSTS = config(
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
-# Database - PostgreSQL for staging
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='epicvibe_staging'),
-        'USER': config('DB_USER', default='epicvibe_staging'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-        'OPTIONS': {
-            'connect_timeout': 10,
-        },
-    }
-}
+# Database - PostgreSQL for staging (fallback to SQLite for local testing)
+DB_ENGINE = config('DB_ENGINE', default='sqlite3')
 
-# Cache - Redis for staging
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': config('REDIS_URL', default='redis://localhost:6379/1'),
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        },
-        'KEY_PREFIX': 'epicvibe_staging',
-        'TIMEOUT': 300,
+if DB_ENGINE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME', default='epicvibe_staging'),
+            'USER': config('DB_USER', default='epicvibe_staging'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
+            'PORT': config('DB_PORT', default='5432'),
+            'OPTIONS': {
+                'connect_timeout': 10,
+            },
+        }
     }
-}
+else:
+    # Fallback to SQLite for local testing
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db_staging.sqlite3',
+        }
+    }
 
-# Session backend - Redis
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+# Cache - Redis for staging (fallback to local memory for testing)
+REDIS_URL = config('REDIS_URL', default='')
+
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            },
+            'KEY_PREFIX': 'epicvibe_staging',
+            'TIMEOUT': 300,
+        }
+    }
+    # Session backend - Redis
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+    SESSION_CACHE_ALIAS = 'default'
+else:
+    # Fallback to local memory cache for testing
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'KEY_PREFIX': 'epicvibe_staging',
+            'TIMEOUT': 300,
+        }
+    }
+    # Session backend - database (fallback)
+    SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 # Static files - S3 for staging (optional, can use local)
 USE_S3 = config('USE_S3', default=False, cast=bool)
