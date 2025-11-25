@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+staticfiles/
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.docker
+
+# Tests
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Documentation
+*.md
+!README.md
+
+# Media files (optional - uncomment if you want to exclude)
+# media/
+
